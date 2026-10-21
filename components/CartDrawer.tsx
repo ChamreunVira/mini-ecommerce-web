@@ -1,0 +1,99 @@
+'use client';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from './ui/drawer';
+import { ShoppingBasket, ShoppingCart, Trash } from 'lucide-react';
+import { useAppContext } from '@/context/AppContextProvider';
+import { Button } from './ui/button';
+import Image from 'next/image';
+
+export const CartDrawer = () => {
+  const { cart } = useAppContext();
+  return (
+    <>
+      <Drawer direction="right">
+        <DrawerTrigger asChild>
+          <div className="relative">
+            <ShoppingCart size={28} className="cursor-pointer rounded-full p-1 hover:bg-gray-100" />
+            <div className="absolute top-0 right-0 w-3 h-3 flex items-center justify-center rounded-full bg-rose-500">
+              <p className="text-white text-xs">{cart?.items.length}</p>
+            </div>
+          </div>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle className="flex items-center gap-2 text-2xl font-medium">
+              <ShoppingCart size={24} /> Cart
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="h-full p-4 flex flex-col">
+            <h2 className="mb-4 text-[16px] font-medium">Items</h2>
+            {cart && cart.items.length > 0 ? (
+              <>
+                <div className="flex-1 flex flex-col space-y-2">
+                  {cart.items.map((item, i) => (
+                    <div key={i} className="px-3 border rounded flex justify-between items-center">
+                      <div className="flex">
+                        <Image
+                          width={50}
+                          height={50}
+                          src={`http://localhost:8000/storage/${item.product.image}`}
+                          alt={item.product.name}
+                          unoptimized
+                        />
+                        <div className="flex flex-col justify-center gap-0.5">
+                          <h2 className="font-medium">{item.product.name}</h2>
+                          <div className="flex items-center gap-4">
+                            <p className="text-[14px] text-rose-500 font-medium">${item.product.price}</p>
+                            <p className="text-xs text-gray-800 bg-gray-100 px-0.5">*{item.quantity}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <Trash size={24} className="text-rose-500 p-1 bg-gray-100 rounded-full" />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <div className="flex justify-between">
+                    <h2 className="font-semibold">Sub Total:</h2>
+                    <p>$100</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <h2 className="font-semibold">Fee:</h2>
+                    <p>$0</p>
+                  </div>
+                  <hr />
+                  <div className="flex justify-between">
+                    <h2 className="font-semibold">Total:</h2>
+                    <p className="font-medium text-rose-500">$100</p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="flex flex-col space-y-4 items-center">
+                  <ShoppingCart />
+                  <h2 className="text-xl text-gray-800">Cart is Empty.</h2>
+                </div>
+              </div>
+            )}
+          </div>
+          <DrawerFooter>
+            <Button>
+              <ShoppingBasket /> Checkout
+            </Button>
+            <DrawerClose asChild>
+              <Button variant="destructive">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </>
+  );
+};
