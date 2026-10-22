@@ -40,7 +40,7 @@ export const Navbar = () => {
   console.log(user);
 
   return (
-    <header ref={navRef} className="sticky z-50 top-0 left-0 overflow-x-hidden bg-white/90">
+    <header ref={navRef} className="sticky border-b z-50 top-0 left-0 overflow-x-hidden bg-white/90">
       <AppContainer className="h-15 flex items-center justify-between">
         {/* branding logo */}
         <div className="text-xl">

@@ -52,7 +52,18 @@ export interface Cart extends BaseEntity {
   items: CartItem[];
 }
 
-type CartItem = {
+export type CartItem = {
+  id: number;
   product: Pick<Product, 'name' | 'price'> & { image: string };
   quantity: number;
 };
+
+export interface Address extends BaseEntity {
+  recipient_name: string;
+  phone: string;
+  address_line: string;
+  city: string;
+  is_default: boolean;
+}
+
+export type AddressPayload = Omit<Address, 'id' | 'created_at' | 'updated_at'>;

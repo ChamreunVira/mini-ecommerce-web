@@ -1,5 +1,5 @@
 import { http } from '@/lib/axios';
-import { ApiResponse, Cart } from '@/types';
+import { ApiResponse, Cart, CartItem } from '@/types';
 
 interface AddToCartPaylaod {
   product_id: number;
@@ -11,6 +11,15 @@ export const cartService = {
     return await http.get('/cart');
   },
   add: async (paylaod: AddToCartPaylaod): Promise<ApiResponse<Cart>> => {
-    return await http.post('/cart/add', paylaod);
+    return await http.post('/cart/items', paylaod);
+  },
+  adjust: async (itemId: number, paylaod: { quantity: number }): Promise<ApiResponse<CartItem>> => {
+    if (paylaod.quantity < 0) {
+      throw Error('Quantity must be greather than zero.');
+    }
+    return await http.patch(`/cart/items/${itemId}`, paylaod);
+  },
+  remove: async (itemId: number): Promise<ApiResponse<Cart>> => {
+    return await http.delete(`/cart/items/${itemId}`);
   },
 };

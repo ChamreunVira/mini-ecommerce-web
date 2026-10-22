@@ -38,7 +38,7 @@ export const HomeCategory = () => {
       {/* <div>
         <h1 className="font-medium text-xl">📦 All Category</h1>
       </div> */}
-      <div className="flex items-center my-8">
+      <div className="flex items-center gap-4 my-8">
         {categories.map((category) => (
           <div className="px-8 py-4 rounded-md bg-gray-100 cursor-pointer" key={category.id}>
             <p className="text-xl font-medium">{category.name}</p>

@@ -10,6 +10,8 @@ interface AppCtxValue {
   user: UserResponse | null;
   cart: Cart | null;
   addToCart: (productId: number, quantity?: number) => void;
+  removeCartItem: (cartItemId: number) => void;
+  adjustCartItem: (cartItemId: number, quantity: number) => void;
 }
 
 export const Provider = createContext<AppCtxValue | null>(null);
@@ -31,12 +33,51 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const router = useRouter();
 
   const addToCart = async (productId: number, quantity: number = 1) => {
+    // if (!isAuthenticated) router.push('/login');
     try {
       const response = await cartService.add({ product_id: productId, quantity: quantity });
       if (response.success) {
         fetchCart();
       }
     } catch (error: any) {}
+  };
+
+  const removeCartItem = async (itemId: number) => {
+    setCart((prev) => {
+      if (prev === null) {
+        return null;
+      }
+
+      return { ...prev, items: prev.items.filter((item) => item.id !== itemId) };
+    });
+
+    try {
+      const response = await cartService.remove(itemId);
+      if (response.success) {
+        fetchCart();
+      }
+    } catch (error: any) {}
+  };
+
+  const adjustCartItem = async (itemId: number, quantity: number = 1) => {
+    setCart((prev) => {
+      if (prev === null) {
+        return null;
+      }
+
+      const { items } = prev;
+
+      const index = items.findIndex((item) => item.id === itemId);
+      items[index].quantity += quantity;
+
+      return { ...prev, items };
+    });
+    try {
+      const response = await cartService.adjust(itemId, { quantity });
+      if (response.success) {
+        fetchCart();
+      }
+    } catch (error) {}
   };
 
   const fetchCart = async () => {
@@ -67,7 +108,6 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (isAuthenticated) {
       void currentUser();
       void fetchCart();
-      router.push('/');
     }
   }, [isAuthenticated]);
 
@@ -75,6 +115,8 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     user,
     cart,
     addToCart,
+    removeCartItem,
+    adjustCartItem,
   };
 
   return <Provider value={ctxValue}>{children}</Provider>;
