@@ -11,18 +11,16 @@ const HeroBanner: React.FC = () => {
   const router = useRouter();
   return (
     <AppContainer className="h-1/3">
-      <div className="w-full mt-12 grid grid-cols-2 rounded-md bg-indigo-50 px-12 py-8">
+      <div className="w-full mt-12 grid grid-cols-2 rounded-md bg-indigo-50 px-8 py-6">
         {/* right message */}
-        <div className="flex flex-col justify-center text-start">
-          <h2 className="font-medium text-3xl text-black">
-            Shopping with vSt4re <span className="text-rose-500">50%</span> off.
-          </h2>
-          <p className="text-[16px] text-gray-800 mt-8">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nesciunt rerum repellendus id, alias hic officiis
-            labore reprehenderit sit ex tempora?
+        <div className="flex flex-col space-y-4 justify-center text-start">
+          <h2 className="font-medium text-2xl">Shop Smarter with vSt4re — Up to 50% Off</h2>
+          <p className="text-[16px] text-gray-800 line-clamp-2">
+            Discover everyday essentials, trending products, and your favorite picks at prices you'll love. Shop quality
+            products, enjoy exclusive deals, and find something special for less.
           </p>
-          <Button onClick={() => router.push('/products')} className="mt-8 w-30 h-10 px-6">
-            Product <ArrowRight size={16} />
+          <Button onClick={() => router.push('/products')} className="w-30 h-10 px-6">
+            Shop Now <ArrowRight size={16} />
           </Button>
         </div>
         {/* show case image */}

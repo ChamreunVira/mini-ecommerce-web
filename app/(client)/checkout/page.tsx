@@ -2,17 +2,25 @@
 import { AppContainer } from '@/components/Container';
 import SectionHeading from '@/components/SectionHeading';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppContext } from '@/context/AppContextProvider';
 import { addressService } from '@/services/address-service';
-import { Address, AddressPayload } from '@/types';
+import { orderService } from '@/services/order-service';
+import { Address, AddressPayload, CreatedPayment } from '@/types';
 import { calculate } from '@/utils/calculate';
+import BAKONG_LOGO from '@/public/assets/bakong.png';
+import COD_LOGO from '@/public/assets/cod_icon.png';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-
-type PaymentMethodType = 'khqr' | 'cod';
+import { toast } from 'react-toastify';
+import QrCodeModel from '@/components/QrCodeModel';
+import { paymentService } from '@/services/payment-service';
+import { PaymentMethod, PaymentStatus } from '@/constant';
+import { useRouter } from 'next/navigation';
 
 const CheckoutPage = () => {
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('khqr');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.KHQR);
+  const [payment, SetPayment] = useState<CreatedPayment | null>(null);
   const [shippingAddress, setShippingAddress] = useState<AddressPayload>({
     recipient_name: '',
     phone: '',
@@ -20,7 +28,11 @@ const CheckoutPage = () => {
     city: 'Phnom Penh',
     is_default: false,
   });
+  const [isOpenQrModel, setIsOpenQrModel] = useState<boolean>(false);
+  const [addressId, setAddressId] = useState<string>('');
   const [addresses, setAddresses] = useState<Address[]>([]);
+
+  const router = useRouter();
 
   const { cart } = useAppContext();
 
@@ -28,6 +40,21 @@ const CheckoutPage = () => {
   const discount = 0.0;
   const subtotal = calculate(cart?.items || []);
   const total = subtotal + fee - discount;
+
+  const handleCheckTransction = () => {
+    const id = setInterval(async () => {
+      try {
+        const response = await paymentService.check(payment!.transaction_id);
+        if (response.success && response.data.status === PaymentStatus.PAID) {
+          clearInterval(id);
+          setIsOpenQrModel(false);
+          router.push(`/${response.data.transaction_id}`);
+        }
+      } catch (error: any) {
+        console.log('Failed to pooling check transaction.');
+      }
+    }, 5000);
+  };
 
   const handleSubmitShippingAddress = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -55,6 +82,29 @@ const CheckoutPage = () => {
     } catch (error: any) {}
   };
 
+  const handleSubmitOrder = async () => {
+    const response = await orderService.create({ address_id: Number(addressId) });
+    if (response.success) {
+      handleCheckout(response.data.id);
+      toast.success('Order created successfully', {
+        position: 'bottom-right',
+      });
+    }
+    try {
+    } catch (error: any) {}
+  };
+
+  const handleCheckout = async (orderId: number) => {
+    try {
+      const response = await paymentService.create({ order_id: orderId, method: paymentMethod });
+      if (response.success) {
+        SetPayment(response.data);
+        handleCheckTransction();
+        setIsOpenQrModel(true);
+      }
+    } catch (error: any) {}
+  };
+
   useEffect(() => {
     void fetchAddress();
   }, []);
@@ -68,13 +118,20 @@ const CheckoutPage = () => {
             <SectionHeading title="Dilivery Address" />
             <div className="mt-4">
               {addresses.length > 0 ? (
-                <div>
-                  <select>
-                    {addresses.map((addr) => (
-                      <option key={addr.id}>{addr.address_line}</option>
-                    ))}
-                  </select>
-                </div>
+                <Select onValueChange={setAddressId} defaultValue={addresses[0].address_line}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Dilevery Address" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {addresses.map((addr) => (
+                        <SelectItem key={addr.id} value={String(addr.id)}>
+                          {addr.address_line}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               ) : (
                 <form onSubmit={handleSubmitShippingAddress}>
                   <div className="grid gap-4 items-center grid-cols-2 mt-4">
@@ -172,21 +229,24 @@ const CheckoutPage = () => {
             </div>
           </div>
         </div>
+
         <div className="h-fit flex flex-col space-y-8 *:border *:px-8 *:py-4">
           {/* payment method */}
           <div className="w-full">
             <SectionHeading title="Payment Method" />
-            <div className="mt-4 flex space-x-4 *:px-8 *:py-3 *:border *:cursor-pointer">
+            <div className="mt-4 flex space-x-4 *:rounded *:px-4 *:py-3 *:border *:cursor-pointer">
               <button
-                onClick={() => setPaymentMethod('khqr')}
-                className={`font-medium text-xl ${paymentMethod === 'khqr' && 'border-indigo-500 text-indigo-500'}`}
+                onClick={() => setPaymentMethod(PaymentMethod.KHQR)}
+                className={`flex items-center gap-4 font-medium text-xl ${paymentMethod === 'khqr' && 'border-indigo-500 text-indigo-500'}`}
               >
-                ABA
+                <Image className="w-10" src={BAKONG_LOGO} alt="khqr_bakong_logo" />
+                KHQR
               </button>
               <button
-                onClick={() => setPaymentMethod('cod')}
-                className={`font-medium text-xl ${paymentMethod === 'cod' && 'border-indigo-500 text-indigo-500'}`}
+                onClick={() => setPaymentMethod(PaymentMethod.COD)}
+                className={`flex items-center gap-4 font-medium text-xl ${paymentMethod === 'cod' && 'border-indigo-500 text-indigo-500'}`}
               >
+                <Image className="w-10" src={COD_LOGO} alt="khqr_bakong_logo" />
                 COD
               </button>
             </div>
@@ -220,12 +280,21 @@ const CheckoutPage = () => {
                 <h2 className="font-medium text-black">${total.toFixed(2)}</h2>
               </div>
             </div>
-            <Button className="w-full mt-4 font-medium text-[16px] h-10">
+            <Button onClick={handleSubmitOrder} className="w-full mt-4 font-medium text-[16px] h-10">
               <p>Checkout</p>
             </Button>
           </div>
         </div>
       </div>
+      {isOpenQrModel && (
+        <QrCodeModel
+          qrString={payment!.qr_string}
+          qrExpry={payment!.qr_expiry}
+          amount={total}
+          currency="USD"
+          onClose={() => setIsOpenQrModel(false)}
+        />
+      )}
     </AppContainer>
   );
 };

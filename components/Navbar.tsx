@@ -3,6 +3,7 @@ import React, { useRef } from 'react';
 import { AppContainer } from './Container';
 import { Home, Phone, ShoppingBag, User } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAppContext } from '@/context/AppContextProvider';
 import { CartDrawer } from './CartDrawer';
 import WishlistDrawer from './WishlistDrawer';
@@ -36,8 +37,8 @@ const navItems: Record<string, any>[] = [
 
 export const Navbar = () => {
   const navRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
   const { user } = useAppContext();
-  console.log(user);
 
   return (
     <header ref={navRef} className="sticky border-b z-50 top-0 left-0 overflow-x-hidden bg-white/90">
@@ -45,18 +46,29 @@ export const Navbar = () => {
         {/* branding logo */}
         <div className="text-xl">
           <Link href="/">
-            <span className="text-indigo-600 font-semibold">v</span>St4re
+            <span className="text-indigo-600 font-semibold">e</span>St4re
           </Link>
         </div>
 
         {/* center navigation */}
-        <nav className="flex space-x-6 items-center *:px-3 *:py-1 *:text-sm *:rounded-sm *:inline-flex *:gap-2 *:items-center *:cursor-pointer *:hover:bg-gray-100">
-          {navItems.map((item) => (
-            <Link href={item.href} key={item.id}>
-              {item.icon}
-              <p className="text-[12px] font-medium">{item.label}</p>
-            </Link>
-          ))}
+        <nav className="flex items-center space-x-6">
+          {navItems.map((item) => {
+            const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+
+            return (
+              <Link
+                href={item.href}
+                key={item.id}
+                aria-current={isActive ? 'page' : undefined}
+                className={`inline-flex cursor-pointer items-center gap-2 rounded-sm px-3 py-1 text-sm transition-colors ${
+                  isActive ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {item.icon}
+                <p className="text-[12px] font-medium">{item.label}</p>
+              </Link>
+            );
+          })}
         </nav>
 
         {/* nav actions */}

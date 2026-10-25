@@ -7,6 +7,13 @@ import SectionHeading from './SectionHeading';
 import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
 
+const categoryImages = [
+  'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=80',
+  'https://images.unsplash.com/photo-1519947486511-46149fa0a254?auto=format&fit=crop&w=900&q=80',
+  'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=900&q=80',
+  'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=900&q=80',
+];
+
 export const HomeCategory = () => {
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -15,7 +22,6 @@ export const HomeCategory = () => {
       const response = await categoryService.getAll();
       if (response.success) {
         setCategories(response.data);
-        console.log(categories);
       }
     } catch (error: unknown) {
       console.log('Error: failed to fetch categories.', error);
@@ -38,11 +44,23 @@ export const HomeCategory = () => {
       {/* <div>
         <h1 className="font-medium text-xl">📦 All Category</h1>
       </div> */}
-      <div className="flex items-center gap-4 my-8">
-        {categories.map((category) => (
-          <div className="px-8 py-4 rounded-md bg-gray-100 cursor-pointer" key={category.id}>
-            <p className="text-xl font-medium">{category.name}</p>
-          </div>
+      <div className="my-8 flex items-stretch gap-4 overflow-x-auto pb-2">
+        {categories.map((category, index) => (
+          <button
+            type="button"
+            className="group relative min-w-52 overflow-hidden rounded-md border bg-gray-100 text-left shadow-xs transition-shadow hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            key={category.id}
+          >
+            <img
+              src={categoryImages[index % categoryImages.length]}
+              alt=""
+              className="h-36 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
+            <p className="absolute bottom-4 left-4 right-4 truncate text-base font-medium text-white">
+              {category.name}
+            </p>
+          </button>
         ))}
       </div>
     </AppContainer>
