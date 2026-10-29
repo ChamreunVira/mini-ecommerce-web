@@ -1,8 +1,15 @@
 import { http } from '@/lib/axios';
-import { ApiResponse, CreatedPayment, Payment, PaymentPayload, PaymentStatusResponse } from '@/types';
+import {
+  ApiResponse,
+  CreatedPayment,
+  PaginatedResponse,
+  Payment,
+  PaymentPayload,
+  PaymentStatusResponse,
+} from '@/types';
 
 export const paymentService = {
-  getAll: async (): Promise<ApiResponse<Payment[]>> => {
+  getAll: async (): Promise<PaginatedResponse<Payment[]>> => {
     return await http.get('/payment');
   },
   check: async (transactionId: string): Promise<ApiResponse<PaymentStatusResponse>> => {

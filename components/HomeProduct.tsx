@@ -15,7 +15,7 @@ const HomeProduct = () => {
     const handleFetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await productService.getAll();
+        const response = await productService.getAll({});
         if (response.success) {
           setProducts(response.data);
         }

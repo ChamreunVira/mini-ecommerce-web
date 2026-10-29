@@ -7,18 +7,17 @@ export interface ApiResponse<T> {
   timestampt: string;
 }
 
-/** Laravel paginator wrapped in ApiResponse */
-export interface PaginatedData<T> {
-  data: T[];
+export interface PaginationMeta {
   current_page: number;
-  last_page: number;
-  per_page: number;
+  limit: number;
   total: number;
-  from: number | null;
-  to: number | null;
+  last_page: number;
+  has_more_pages: boolean;
 }
 
-export type PaginatedResponse<T> = ApiResponse<PaginatedData<T>>;
+export interface PaginatedResponse<T> extends ApiResponse<T[]> {
+  meta: PaginationMeta;
+}
 
 export interface BaseEntity {
   id: number;
@@ -50,14 +49,17 @@ export interface Product extends BaseEntity {
   description?: string;
   image_url: string;
   price: number;
-  /** Category name string (from ProductResource) */
   category: string;
   quantity: number;
 }
 
-/** Used in admin forms where we need the category_id integer */
-export interface ProductWithCategoryId extends Product {
-  category_id?: number;
+export interface ProductPayload {
+  name: string;
+  description?: string;
+  price: number;
+  quantity: number;
+  category_id: number;
+  image: File;
 }
 
 export interface Category extends BaseEntity {
@@ -104,8 +106,7 @@ export interface OrderItem {
   subtotal: string;
 }
 
-export interface Order {
-  id: number;
+export interface Order extends BaseEntity {
   order_number: string;
   status: OrderStatus;
   subtotal: string;
@@ -116,8 +117,7 @@ export interface Order {
   payment: Payment | null;
 }
 
-export interface Payment {
-  id: number;
+export interface Payment extends BaseEntity {
   transaction_id: string;
   method: PaymentMethod;
   status: PaymentStatus;
@@ -139,16 +139,6 @@ export interface PaymentPayload {
 }
 
 export type CreatedPayment = Omit<Payment, 'md5' | 'created_at' | 'updated_at'>;
-
-// ── Admin payload types ──────────────────────────────────────────────────────
-
-export interface ProductPayload {
-  name: string;
-  price: string | number;
-  quantity: string | number;
-  category_id: string | number;
-  description?: string;
-}
 
 export interface CategoryPayload {
   name: string;

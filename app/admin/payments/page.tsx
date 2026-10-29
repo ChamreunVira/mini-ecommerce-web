@@ -1,5 +1,7 @@
 import React from 'react';
 
-export const page = () => {
+const PaymentPage = () => {
   return <div>page</div>;
 };
+
+export default PaymentPage;

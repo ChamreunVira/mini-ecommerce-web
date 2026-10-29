@@ -1,27 +1,43 @@
-import { http } from "@/lib/axios";
-import { ApiResponse, Product } from "@/types";
+import { http } from '@/lib/axios';
+import { ApiResponse, PaginatedResponse, Product, ProductPayload } from '@/types';
+
+const MULTIPART_CONFIG = {
+  headers: { 'Content-Type': 'multipart/form-data' },
+};
+
+const buildProductFormData = (payload: ProductPayload): FormData => {
+  const formData = new FormData();
+
+  formData.append('name', payload.name);
+  formData.append('description', payload.description ?? '');
+  formData.append('price', String(payload.price));
+  formData.append('quantity', String(payload.quantity));
+  formData.append('category_id', String(payload.category_id));
+
+  if (payload.image) {
+    formData.append('image', payload.image);
+  }
+
+  return formData;
+};
 
 export const productService = {
-  getAll: async (): Promise<ApiResponse<Product[]>> => {
-    return await http.get("/products");
+  getAll: async (params): Promise<PaginatedResponse<Product>> => {
+    return await http.get('/products', {
+      params,
+    });
   },
   getById: async (id: number): Promise<ApiResponse<Product>> => {
     return await http.get(`/products/${id}`);
   },
-  /** Admin: create product with image upload */
-  create: async (formData: FormData): Promise<ApiResponse<Product>> => {
-    return await http.post("/products", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+  create: async (payload: ProductPayload): Promise<ApiResponse<Product>> => {
+    return await http.post('/product', buildProductFormData(payload), MULTIPART_CONFIG);
   },
-  /** Admin: update product — Laravel needs _method=PUT for multipart PATCH/PUT */
-  update: async (id: number, formData: FormData): Promise<ApiResponse<Product>> => {
-    formData.append("_method", "PUT");
-    return await http.post(`/products/${id}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+  update: async (id: number, payload: ProductPayload): Promise<ApiResponse<Product>> => {
+    const formData = buildProductFormData(payload);
+    formData.append('_method', 'PUT');
+    return await http.post(`/product/${id}`, formData, MULTIPART_CONFIG);
   },
-  /** Admin: delete product */
   delete: async (id: number): Promise<ApiResponse<null>> => {
     return await http.delete(`/products/${id}`);
   },
