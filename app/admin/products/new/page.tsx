@@ -27,7 +27,7 @@ export default function CreateProductPage() {
     try {
       await productService.create(payload);
       toast.success('Product created.');
-      router.push('/dashboard/products');
+      router.push('/admin/products');
     } catch (error) {
       toast.error(getErrorMessage(error, 'Failed to create product.'));
     } finally {

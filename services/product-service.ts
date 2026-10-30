@@ -31,7 +31,7 @@ export const productService = {
     return await http.get(`/products/${id}`);
   },
   create: async (payload: ProductPayload): Promise<ApiResponse<Product>> => {
-    return await http.post('/product', buildProductFormData(payload), MULTIPART_CONFIG);
+    return await http.post('/products', buildProductFormData(payload), MULTIPART_CONFIG);
   },
   update: async (id: number, payload: ProductPayload): Promise<ApiResponse<Product>> => {
     const formData = buildProductFormData(payload);

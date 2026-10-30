@@ -20,6 +20,8 @@ interface ProductTableProps {
   products: Product[];
   isLoading: boolean;
   errorMessage: string | null;
+  emptyMessage: string;
+  visibleCount: number;
   paginationMeta: PaginationMeta;
   onPageChange: (page: number) => void;
   onView: (product: Product) => void;
@@ -40,14 +42,16 @@ export const ProductTable = ({
   products,
   isLoading,
   errorMessage,
+  emptyMessage,
+  visibleCount,
   paginationMeta,
   onPageChange,
   onView,
   onDelete,
 }: ProductTableProps) => {
   const currentPage = paginationMeta.current_page;
-  const totalPages = paginationMeta.total;
-  const totalCount = paginationMeta.last_page;
+  const totalPages = Math.max(1, paginationMeta.last_page);
+  const totalCount = paginationMeta.total;
 
   return (
     <div className="space-y-4">
@@ -58,7 +62,7 @@ export const ProductTable = ({
               <TableHead className="w-16">Image</TableHead>
               <TableHead>Name</TableHead>
               <TableHead className="hidden md:table-cell">Category</TableHead>
-              <TableHead className="text-right">Price</TableHead>
+              <TableHead className="hidden md:table-cell">Price</TableHead>
               <TableHead className="hidden sm:table-cell">Stock</TableHead>
               <TableHead className="hidden lg:table-cell">Updated</TableHead>
               <TableHead className="w-12">
@@ -74,7 +78,7 @@ export const ProductTable = ({
             {!isLoading && errorMessage && <TableMessage message={errorMessage} />}
 
             {/* handle empty */}
-            {!isLoading && !errorMessage && products.length === 0 && <TableMessage message="No products found." />}
+            {!isLoading && !errorMessage && products.length === 0 && <TableMessage message={emptyMessage} />}
 
             {!isLoading &&
               !errorMessage &&
@@ -85,7 +89,7 @@ export const ProductTable = ({
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell className="hidden md:table-cell">{product.category}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(product.price)}</TableCell>
+                  <TableCell className="hidden md:table-cell">{formatCurrency(product.price)}</TableCell>
                   <TableCell className="hidden sm:table-cell">
                     <div className="flex items-center gap-2">
                       <span>{product.quantity}</span>
@@ -128,7 +132,7 @@ export const ProductTable = ({
       {/* control paginated */}
       <div className="flex items-center justify-between text-sm text-muted-foreground">
         <span>
-          {totalCount} product{totalCount === 1 ? '' : 's'}
+          Showing {visibleCount} of {totalCount} product{totalCount === 1 ? '' : 's'}
         </span>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" disabled={currentPage <= 1} onClick={() => onPageChange(currentPage - 1)}>

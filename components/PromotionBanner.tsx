@@ -2,25 +2,19 @@ import React from 'react';
 import { AppContainer } from './Container';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
-export const PromotionBanner = () => {
-  return (
-    <AppContainer>
-      <div className="w-full my-24 px-8 py-4 grid grid-cols-2 place-items-center h-60 rounded-md bg-gray-800">
-        <div className="flex flex-col gap-4 *:text-white">
-          <h5 className="text-[16px]">First Order Promotion</h5>
-          <h2 className="text-3xl font-medium">Minimalist Design, Maximum Utility. Get 10% Off.</h2>
-          <p className="text-sm">
-            Use promo code <span className="bg-white/20 px-2 py-0.5 rounded">VST4RE10</span> at checkout to enjoy 10%
-            off your initial order.
-          </p>
-        </div>
-        <div className="w-full flex justify-end">
-          <Button className="h-10 px-3" asChild>
-            <Link href="/products">Claim Discount & Shop</Link>
-          </Button>
-        </div>
+export const PromotionBanner = () => (
+  <AppContainer>
+    <section className="my-12 grid gap-6 overflow-hidden rounded-2xl bg-slate-950 px-6 py-8 text-white sm:my-16 sm:grid-cols-[1fr_auto] sm:items-center sm:px-10 sm:py-10">
+      <div className="max-w-2xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">Make a good choice</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">See the details before you decide.</h2>
+        <p className="mt-3 text-sm leading-6 text-slate-300">Browse product descriptions, prices, and current stock, then choose a payment option at checkout.</p>
       </div>
-    </AppContainer>
-  );
-};
+      <Button className="h-11 w-fit bg-white px-5 text-slate-950 hover:bg-slate-100" asChild>
+        <Link href="/products">Explore the catalog <ArrowRight size={16} /></Link>
+      </Button>
+    </section>
+  </AppContainer>
+);

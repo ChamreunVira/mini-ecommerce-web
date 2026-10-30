@@ -6,6 +6,8 @@ import { Category } from '@/types';
 import SectionHeading from './SectionHeading';
 import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import { CategoryStatus } from '@/constant';
 
 const categoryImages = [
   'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=80',
@@ -21,7 +23,7 @@ export const HomeCategory = () => {
     try {
       const response = await categoryService.getAll();
       if (response.success) {
-        setCategories(response.data);
+        setCategories(response.data.filter((category) => category.status === CategoryStatus.ACTIVE));
       }
     } catch (error: unknown) {
       console.log('Error: failed to fetch categories.', error);
@@ -34,34 +36,43 @@ export const HomeCategory = () => {
   }, []);
 
   return (
-    <AppContainer>
-      <SectionHeading title="📦 Top Categories">
-        <Button variant="ghost" className="text-xs group">
-          All
-          <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform duration-75" />
+    <AppContainer className="pt-10 sm:pt-14">
+      <SectionHeading title="Shop by category" description="A quick way to find what you need.">
+        <Button variant="ghost" className="group text-xs" asChild>
+          <Link href="/products">
+            View all
+            <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform duration-75" />
+          </Link>
         </Button>
       </SectionHeading>
-      {/* <div>
-        <h1 className="font-medium text-xl">📦 All Category</h1>
-      </div> */}
-      <div className="my-8 flex items-stretch gap-4 overflow-x-auto pb-2">
-        {categories.map((category, index) => (
-          <button
-            type="button"
-            className="group relative min-w-52 overflow-hidden rounded-md border bg-gray-100 text-left shadow-xs transition-shadow hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      <div className="my-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {categories.slice(0, 4).map((category, index) => (
+          <Link
+            href={`/products?category=${encodeURIComponent(category.slug)}`}
+            className="group relative min-h-48 overflow-hidden rounded-xl border bg-gray-100 text-left shadow-xs transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             key={category.id}
+            aria-label={`Browse products in ${category.name}`}
           >
             <img
               src={categoryImages[index % categoryImages.length]}
-              alt=""
-              className="h-36 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              alt={`${category.name} collection`}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
-            <p className="absolute bottom-4 left-4 right-4 truncate text-base font-medium text-white">
-              {category.name}
-            </p>
-          </button>
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="absolute inset-x-4 bottom-4 text-white">
+              <p className="truncate text-lg font-semibold">{category.name}</p>
+              <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/80">
+                {category.description || `Explore the ${category.name.toLowerCase()} collection.`}
+              </p>
+            </div>
+          </Link>
         ))}
+        {categories.length === 0 && (
+          <p className="col-span-full rounded-xl border border-dashed px-5 py-8 text-center text-sm text-slate-500">
+            Categories will appear here as the collection grows.
+          </p>
+        )}
       </div>
     </AppContainer>
   );

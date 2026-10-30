@@ -22,11 +22,12 @@ export const ProductFilters = ({
 }: ProductFiltersProps) => (
   <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
     <div className="relative flex-1">
-      <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
       <Input
         value={filters.searchQuery}
         onChange={(event) => onChange({ searchQuery: event.target.value })}
         placeholder="Search by name or category..."
+        aria-label="Search products by name or category"
         className="pl-8"
       />
     </div>

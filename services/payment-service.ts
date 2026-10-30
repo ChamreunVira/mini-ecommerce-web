@@ -9,12 +9,14 @@ import {
 } from '@/types';
 
 export const paymentService = {
-  getAll: async (): Promise<PaginatedResponse<Payment[]>> => {
+  getAll: async (): Promise<PaginatedResponse<Payment>> => {
     return await http.get('/payment');
   },
+
   check: async (transactionId: string): Promise<ApiResponse<PaymentStatusResponse>> => {
     return await http.get(`/payment/${transactionId}/status`);
   },
+
   create: async (paylaod: PaymentPayload): Promise<ApiResponse<CreatedPayment>> => {
     return await http.post('/payment', paylaod);
   },

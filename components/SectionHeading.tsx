@@ -11,8 +11,8 @@ export default function SectionHeading({ children, title, description }: Section
     <div className="flex items-center justify-between">
       {/* detail */}
       <div>
-        <h1 className="text-xl font-medium">{title}</h1>
-        {description && <p className="text-[16px] text-gray-800">{description}</p>}
+        <h2 className="text-xl font-medium">{title}</h2>
+        {description && <p className="mt-1 text-sm text-slate-600">{description}</p>}
       </div>
       {/* action */}
       <div>{children}</div>

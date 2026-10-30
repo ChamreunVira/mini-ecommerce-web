@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { ProductFilters } from '@/components/products/ProductFilter';
 import { Button } from '@/components/ui/button';
 import { ProductTable } from '@/components/products/ProductTable';
 import { ProductViewDialog } from '@/components/products/ProductViewDialog';
@@ -13,6 +14,7 @@ import { productService } from '@/services/product-service';
 import { getErrorMessage } from '@/lib/axios';
 import type { Product } from '@/types';
 import type { PaginationMeta } from '@/types';
+import { useProductFilters } from '@/hooks/useProductFilter';
 
 const PAGE_SIZE = 10;
 
@@ -35,6 +37,15 @@ export default function ProductsPage() {
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const {
+    filters,
+    updateFilters,
+    resetFilters,
+    hasActiveFilters,
+    filteredProducts,
+    filteredCount,
+  } = useProductFilters(products);
+  const categoryNames = Array.from(new Set(products.map((product) => product.category))).sort((a, b) => a.localeCompare(b));
 
   useEffect(() => {
     let isActive = true;
@@ -121,10 +132,26 @@ export default function ProductsPage() {
         </Button>
       </div>
 
+      <ProductFilters
+        filters={filters}
+        categoryNames={categoryNames}
+        hasActiveFilters={hasActiveFilters}
+        onChange={(changes) => {
+          updateFilters(changes);
+          setPage(1);
+        }}
+        onReset={() => {
+          resetFilters();
+          setPage(1);
+        }}
+      />
+
       <ProductTable
-        products={products}
+        products={filteredProducts}
         isLoading={isLoading}
         errorMessage={errorMessage}
+        emptyMessage={hasActiveFilters ? 'No products match your filters on this page.' : 'No products found.'}
+        visibleCount={filteredCount}
         paginationMeta={pagination}
         onPageChange={setPage}
         onView={setViewingProduct}

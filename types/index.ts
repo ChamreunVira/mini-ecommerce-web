@@ -123,8 +123,6 @@ export interface Payment extends BaseEntity {
   status: PaymentStatus;
   amount: string;
   currency: 'USD';
-  qr_string: string;
-  qr_expiry: string;
 }
 
 export interface PaymentStatusResponse {
@@ -142,11 +140,8 @@ export type CreatedPayment = Omit<Payment, 'md5' | 'created_at' | 'updated_at'>;
 
 export interface CategoryPayload {
   name: string;
-}
-
-export interface CategoryUpdatePayload extends CategoryPayload {
   description?: string;
-  status?: CategoryStatus;
+  status: boolean;
 }
 
 export interface OrderStatusPayload {

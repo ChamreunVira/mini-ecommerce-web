@@ -13,8 +13,6 @@ export interface ProductFilterState {
   sort: SortOption;
 }
 
-const PAGE_SIZE = 10;
-
 const DEFAULT_FILTERS: ProductFilterState = {
   searchQuery: '',
   category: 'all',
@@ -42,53 +40,38 @@ const sortProducts = (products: Product[], sort: SortOption): Product[] => {
   }
 };
 
-// export const useProductFilters = (products: Product[]) => {
-//   const [filters, setFilters] = useState<ProductFilterState>(DEFAULT_FILTERS);
-//   const [requestedPage, setRequestedPage] = useState(1);
+export const useProductFilters = (products: Product[]) => {
+  const [filters, setFilters] = useState<ProductFilterState>(DEFAULT_FILTERS);
 
-//   const filteredProducts = useMemo(() => {
-//     const normalizedQuery = filters.searchQuery.trim().toLowerCase();
+  const filteredProducts = useMemo(() => {
+    const normalizedQuery = filters.searchQuery.trim().toLocaleLowerCase();
+    const matchingProducts = products.filter((product) => {
+      const matchesSearch =
+        normalizedQuery === '' ||
+        product.name.toLocaleLowerCase().includes(normalizedQuery) ||
+        product.category.toLocaleLowerCase().includes(normalizedQuery);
+      const matchesCategory = filters.category === 'all' || product.category === filters.category;
+      const matchesStock = filters.stock === 'all' || getStockStatus(product.quantity) === filters.stock;
+      return matchesSearch && matchesCategory && matchesStock;
+    });
 
-//     const matchingProducts = products.filter((product) => {
-//       const matchesSearch =
-//         normalizedQuery === '' ||
-//         product.name.toLowerCase().includes(normalizedQuery) ||
-//         product.category.toLowerCase().includes(normalizedQuery);
-//       const matchesCategory = filters.category === 'all' || product.category === filters.category;
-//       const matchesStock = filters.stock === 'all' || getStockStatus(product.quantity) === filters.stock;
+    return sortProducts(matchingProducts, filters.sort);
+  }, [products, filters]);
 
-//       return matchesSearch && matchesCategory && matchesStock;
-//     });
+  const updateFilters = (changes: Partial<ProductFilterState>) => {
+    setFilters((previousFilters) => ({ ...previousFilters, ...changes }));
+  };
 
-//     return sortProducts(matchingProducts, filters.sort);
-//   }, [products, filters]);
+  const resetFilters = () => setFilters(DEFAULT_FILTERS);
+  const hasActiveFilters =
+    filters.searchQuery.trim() !== '' || filters.category !== 'all' || filters.stock !== 'all' || filters.sort !== 'newest';
 
-//   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
-//   const currentPage = Math.min(requestedPage, totalPages);
-//   const paginatedProducts = filteredProducts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-
-//   const updateFilters = (changes: Partial<ProductFilterState>) => {
-//     setFilters((previousFilters) => ({ ...previousFilters, ...changes }));
-//     setRequestedPage(1);
-//   };
-
-//   const resetFilters = () => {
-//     setFilters(DEFAULT_FILTERS);
-//     setRequestedPage(1);
-//   };
-
-//   const hasActiveFilters =
-//     filters.searchQuery !== '' || filters.category !== 'all' || filters.stock !== 'all' || filters.sort !== 'newest';
-
-//   return {
-//     filters,
-//     updateFilters,
-//     resetFilters,
-//     hasActiveFilters,
-//     paginatedProducts,
-//     filteredCount: filteredProducts.length,
-//     currentPage,
-//     totalPages,
-//     setCurrentPage: setRequestedPage,
-//   };
-// };
+  return {
+    filters,
+    updateFilters,
+    resetFilters,
+    hasActiveFilters,
+    filteredProducts,
+    filteredCount: filteredProducts.length,
+  };
+};
