@@ -14,6 +14,7 @@ import { Button } from './ui/button';
 import Image from 'next/image';
 import { CartItem } from '@/types';
 import { useRouter } from 'next/navigation';
+import { getProductImageUrl } from '@/lib/product';
 
 export const CartDrawer = () => {
   const router = useRouter();
@@ -51,7 +52,7 @@ export const CartDrawer = () => {
                         <Image
                           width={60}
                           height={60}
-                          src={`http://localhost:8000/storage/${item.product.image}`}
+                          src={getProductImageUrl(item.product.image)}
                           alt={item.product.name}
                           unoptimized
                         />

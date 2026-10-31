@@ -5,6 +5,7 @@ import React from 'react';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContextProvider';
+import { getProductImageUrl } from '@/lib/product';
 
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   const router = useRouter();
@@ -12,19 +13,17 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   const isAvailable = product.quantity > 0;
   const isWishlisted = wishlist.some((item) => item.product_id === product.id);
 
-  const imageUrl = process.env.NEXT_PUBLIC_STORAGE_URL + product.image_url;
-
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-md border bg-white transition-shadow hover:shadow-sm">
       <button
         type="button"
         onClick={() => router.push(`/products/${product.id}`)}
-        className="relative aspect-square w-full overflow-hidden bg-slate-50 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset"
+        className="relative aspect-square w-full overflow-idden bg-slate-50 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset"
         aria-label={`View ${product.name}`}
       >
         <img
           className="h-full w-full object-contain p-6 transition-transform duration-300 group-hover:scale-105"
-          src={imageUrl}
+          src={getProductImageUrl(product.image_url)}
           alt={product.name}
         />
         <span

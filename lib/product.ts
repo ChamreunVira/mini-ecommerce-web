@@ -16,5 +16,4 @@ export const getStockStatus = (quantity: number): StockStatus => {
 
 const STORAGE_BASE_URL = process.env.NEXT_PUBLIC_STORAGE_URL ?? 'http://localhost:8000/storage';
 
-export const getProductImageUrl = (imagePath: string | null): string | null =>
-  imagePath ? `${STORAGE_BASE_URL}/${imagePath}` : null;
+export const getProductImageUrl = (imagePath: string): string => `${STORAGE_BASE_URL}/${imagePath}`;

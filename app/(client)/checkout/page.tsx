@@ -18,6 +18,7 @@ import { paymentService } from '@/services/payment-service';
 import { PaymentMethod, PaymentStatus } from '@/constant';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, X } from 'lucide-react';
+import { getProductImageUrl } from '@/lib/product';
 
 const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.KHQR);
@@ -262,7 +263,7 @@ const CheckoutPage = () => {
                     <Image
                       width={50}
                       height={50}
-                      src={`http://localhost:8000/storage/${item.product.image}`}
+                      src={getProductImageUrl(item.product.image)}
                       alt={item.product.name}
                       unoptimized
                     />
