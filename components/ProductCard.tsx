@@ -12,6 +12,8 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   const isAvailable = product.quantity > 0;
   const isWishlisted = wishlist.some((item) => item.product_id === product.id);
 
+  const imageUrl = process.env.NEXT_PUBLIC_STORAGE_URL + product.image_url;
+
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-md border bg-white transition-shadow hover:shadow-sm">
       <button
@@ -22,7 +24,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
       >
         <img
           className="h-full w-full object-contain p-6 transition-transform duration-300 group-hover:scale-105"
-          src={`http://localhost:8000/storage/${product.image_url}`}
+          src={imageUrl}
           alt={product.name}
         />
         <span
