@@ -3,6 +3,7 @@ import { productService } from '@/services/product-service';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import ProductPurchaseActions from '@/components/ProductPurchaseActions';
+import { getProductImageUrl } from '@/lib/product';
 
 interface ProductDetailProps {
   params: Promise<{ id: string }>;
@@ -21,7 +22,7 @@ const ProductDetail = async ({ params }: ProductDetailProps) => {
         <Image
           width={500}
           height={500}
-          src={`http://localhost:8000/storage/${product?.image_url}`}
+          src={getProductImageUrl(product.image_url)}
           alt="product_detail_primary"
           unoptimized
         />
