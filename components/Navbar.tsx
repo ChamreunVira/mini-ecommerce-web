@@ -44,7 +44,7 @@ export const Navbar = () => {
 
   return (
     <header ref={navRef} className="sticky border-b z-50 top-0 left-0 overflow-x-hidden bg-white/90">
-      <AppContainer className="flex h-15 items-center justify-between gap-3">
+      <AppContainer className="flex h-15 items-center justify-between gap-8">
         {/* branding logo */}
         <div className="text-xl">
           <Link href="/">
