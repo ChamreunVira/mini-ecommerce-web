@@ -4,6 +4,7 @@ import { AppContainer } from '@/components/Container';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { OrderStatus } from '@/constant';
 import { useAppContext } from '@/context/AppContextProvider';
+import { getErrorMessage } from '@/lib/axios';
 import { formatCurrency, formatOrderDate } from '@/lib/format';
 import { addressService } from '@/services/address-service';
 import { orderService } from '@/services/order-service';
@@ -45,16 +46,28 @@ export default function ProfilePage() {
       setErrorMessage(null);
 
       try {
-        const [addressResponse, orderResponse] = await Promise.all([
+        const [addressResult, orderResult] = await Promise.allSettled([
           addressService.getAll(),
           orderService.getUserOrder({ page: 1, limit: 50 }),
         ]);
 
         if (!isActive) return;
-        setAddresses(addressResponse.data);
-        setOrders(orderResponse.data);
-      } catch {
-        if (isActive) setErrorMessage('We could not load your profile details right now.');
+
+        const messages: string[] = [];
+        if (addressResult.status === 'fulfilled') {
+          setAddresses(Array.isArray(addressResult.value.data) ? addressResult.value.data : []);
+        } else {
+          messages.push(getErrorMessage(addressResult.reason, 'We could not load your addresses.'));
+        }
+
+        if (orderResult.status === 'fulfilled') {
+          setOrders(Array.isArray(orderResult.value.data) ? orderResult.value.data : []);
+        } else {
+          setOrders([]);
+          messages.push(getErrorMessage(orderResult.reason, 'We could not load your order history.'));
+        }
+
+        setErrorMessage(messages.length > 0 ? messages.join(' ') : null);
       } finally {
         if (isActive) setIsLoading(false);
       }

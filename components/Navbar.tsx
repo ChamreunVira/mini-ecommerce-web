@@ -1,13 +1,14 @@
 'use client';
 import React, { useRef } from 'react';
 import { AppContainer } from './Container';
-import { Home, LogOut, Phone, ShoppingBag, User } from 'lucide-react';
+import { Home, LogOut, Menu, Phone, ShoppingBag, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppContext } from '@/context/AppContextProvider';
 import { Button } from './ui/button';
 import { CartDrawer } from './CartDrawer';
 import WishlistDrawer from './WishlistDrawer';
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 
 const navItems: Record<string, any>[] = [
   {
@@ -43,7 +44,7 @@ export const Navbar = () => {
 
   return (
     <header ref={navRef} className="sticky border-b z-50 top-0 left-0 overflow-x-hidden bg-white/90">
-      <AppContainer className="h-15 flex items-center justify-between">
+      <AppContainer className="flex h-15 items-center justify-between gap-3">
         {/* branding logo */}
         <div className="text-xl">
           <Link href="/">
@@ -52,7 +53,7 @@ export const Navbar = () => {
         </div>
 
         {/* center navigation */}
-        <nav className="flex items-center space-x-6">
+        <nav className="hidden items-center space-x-2 lg:flex">
           {navItems.map((item) => {
             const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
 
@@ -72,9 +73,42 @@ export const Navbar = () => {
           })}
         </nav>
 
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation menu">
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[min(85vw,20rem)]">
+            <SheetHeader>
+              <SheetTitle>eSt4re</SheetTitle>
+            </SheetHeader>
+            <nav className="flex flex-col gap-2 px-4">
+              {navItems.map((item) => {
+                const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+
+                return (
+                  <SheetClose asChild key={item.id}>
+                    <Link
+                      href={item.href}
+                      aria-current={isActive ? 'page' : undefined}
+                      className={`inline-flex items-center gap-3 rounded-sm px-3 py-2 text-sm ${
+                        isActive ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </Link>
+                  </SheetClose>
+                );
+              })}
+            </nav>
+          </SheetContent>
+        </Sheet>
+
         {/* nav actions */}
-        <div className="flex gap-4">
-          <div className="flex items-center space-x-2.5">
+        <div className="ml-auto flex min-w-0 items-center gap-1 sm:gap-4">
+          <div className="flex items-center space-x-1 sm:space-x-2.5">
             {/* shopping badge */}
             <CartDrawer />
             {/* witlist products */}
@@ -85,10 +119,10 @@ export const Navbar = () => {
             <Link
               href="/profile"
               aria-label="Open your profile"
-              className="flex items-center gap-1 rounded bg-gray-100 px-1 py-0.5 text-sm font-medium hover:bg-indigo-50 hover:text-indigo-600"
+              className="flex max-w-24 items-center gap-1 rounded bg-gray-100 px-1 py-0.5 text-sm font-medium hover:bg-indigo-50 hover:text-indigo-600 sm:max-w-none"
             >
               <User size={28} className="rounded-full p-1" />
-              {user?.name || 'Profile'}
+              <span className="hidden truncate sm:inline">{user?.name || 'Profile'}</span>
             </Link>
             <Button
               type="button"
