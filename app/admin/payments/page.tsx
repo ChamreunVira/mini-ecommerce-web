@@ -14,6 +14,8 @@ import type { Payment } from '@/types';
 import { getErrorMessage } from '@/lib/axios';
 import { paymentService } from '@/services/payment-service';
 import { PaymentTable } from '@/components/payments/PaymentTable';
+import { KpiCards } from '@/components/KpiCards';
+import type { KpiMetric } from '@/types';
 
 export default function PaymentsPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -24,12 +26,15 @@ export default function PaymentsPage() {
   const [methodFilter, setMethodFilter] = useState<'all' | PaymentMethod>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all');
   const [refreshingPaymentId, setRefreshingPaymentId] = useState<number | null>(null);
+  const [updatingPaymentId, setUpdatingPaymentId] = useState<number | null>(null);
+  const [paymentMetrics, setPaymentMetrics] = useState<KpiMetric[]>([]);
 
   useEffect(() => {
     const loadPayments = async () => {
       try {
         const response = await paymentService.getAll();
         setPayments(response.data);
+        setPaymentMetrics(response.metrics);
         setErrorMessage(null);
       } catch (error) {
         setErrorMessage(getErrorMessage(error, 'Failed to load payments.'));
@@ -57,6 +62,23 @@ export default function PaymentsPage() {
       toast.error(getErrorMessage(error, 'Failed to refresh payment status.'));
     } finally {
       setRefreshingPaymentId(null);
+    }
+  };
+
+  const handleStatusChange = async (payment: Payment, status: PaymentStatus) => {
+    if (payment.status === status) return;
+
+    setUpdatingPaymentId(payment.id);
+    try {
+      const response = await paymentService.updateStatus(payment.id, status);
+      setPayments((currentPayments) =>
+        currentPayments.map((currentPayment) => (currentPayment.id === payment.id ? response.data : currentPayment)),
+      );
+      toast.success(`Payment status updated to ${response.data.status}.`);
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to update payment status.'));
+    } finally {
+      setUpdatingPaymentId(null);
     }
   };
 
@@ -102,6 +124,8 @@ export default function PaymentsPage() {
           <p className="text-sm text-muted-foreground">Review transactions and refresh their payment status.</p>
         </div>
       </div>
+
+      <KpiCards metrics={paymentMetrics} />
 
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div className="relative flex-1">
@@ -160,6 +184,8 @@ export default function PaymentsPage() {
         onView={handleViewPayment}
         refreshingPaymentId={refreshingPaymentId}
         onRefreshStatus={handleRefreshStatus}
+        updatingPaymentId={updatingPaymentId}
+        onStatusChange={handleStatusChange}
       />
 
       <ViewResourceDialog

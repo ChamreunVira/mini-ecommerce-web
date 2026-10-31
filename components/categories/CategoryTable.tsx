@@ -65,8 +65,11 @@ export const CategoryTable = ({
         </TableHeader>
         <TableBody>
           {isLoading && <TableMessage message="Loading categories..." />}
+          
           {!isLoading && errorMessage && <TableMessage message={errorMessage} />}
+          
           {!isLoading && !errorMessage && categories.length === 0 && <TableMessage message={emptyMessage} />}
+          
           {!isLoading &&
             !errorMessage &&
             categories.map((category) => (

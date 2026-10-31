@@ -1,24 +1,17 @@
-import { http } from "@/lib/axios";
-import {
-  ApiResponse,
-  AuthPaylaod,
-  AuthResponse,
-  RegisterPayload,
-  UserResponse,
-} from "@/types";
+import { http } from '@/lib/axios';
+import { ApiResponse, AuthPaylaod, AuthResponse, RegisterPayload, UserResponse } from '@/types';
 
 export const authService = {
-  login: async (
-    credential: AuthPaylaod,
-  ): Promise<ApiResponse<AuthResponse>> => {
-    return await http.post("/auth/login", credential);
+  login: async (credential: AuthPaylaod): Promise<ApiResponse<AuthResponse>> => {
+    return await http.post('/auth/login', credential);
   },
-  register: async (
-    payload: RegisterPayload,
-  ): Promise<ApiResponse<AuthResponse>> => {
-    return await http.post("/auth/register", payload);
+  register: async (payload: RegisterPayload): Promise<ApiResponse<AuthResponse>> => {
+    return await http.post('/auth/register', payload);
   },
   me: async (): Promise<ApiResponse<UserResponse>> => {
-    return await http.get("/auth/me");
+    return await http.get('/auth/me');
+  },
+  logout: async (): Promise<ApiResponse<null>> => {
+    return await http.post('/auth/logout');
   },
 };

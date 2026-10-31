@@ -2,7 +2,7 @@ import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency, formatNumber } from '@/lib/format';
-import type { KpiMetric } from '@/lib/mock/overview-stats';
+import type { KpiMetric } from '@/types';
 import { cn } from '@/lib/utils';
 
 interface KpiCardsProps {

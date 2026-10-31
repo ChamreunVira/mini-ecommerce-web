@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
-import type { MonthlyRevenue } from '@/lib/mock/overview-stats';
+import type { MonthlyRevenue } from '@/types';
 
 const chartConfig = {
   revenue: { label: 'Revenue', color: 'oklch(0.623 0.188 259.815)' },

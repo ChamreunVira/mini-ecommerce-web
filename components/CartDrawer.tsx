@@ -8,7 +8,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from './ui/drawer';
-import { ShoppingBasket, ShoppingCart, Trash } from 'lucide-react';
+import { Minus, Plus, ShoppingBasket, ShoppingCart, Trash } from 'lucide-react';
 import { useAppContext } from '@/context/AppContextProvider';
 import { Button } from './ui/button';
 import Image from 'next/image';
@@ -45,8 +45,8 @@ export const CartDrawer = () => {
             {cart && cart.items.length > 0 ? (
               <>
                 <div className="flex-1 flex flex-col space-y-2">
-                  {cart.items.map((item, i) => (
-                    <div key={i} className="px-3 py-2 border rounded flex justify-between items-center">
+                  {cart.items.map((item) => (
+                    <div key={item.id} className="px-3 py-2 border rounded flex justify-between items-center">
                       <div className="flex">
                         <Image
                           width={60}
@@ -60,19 +60,22 @@ export const CartDrawer = () => {
                           <div className="flex items-center gap-4">
                             <div className="flex justify-center items-center space-x-2 *:p-1 *:w-6 *:h-6">
                               <button
-                                onClick={() => adjustCartItem(item.id, 1)}
-                                className="flex items-center justify-center rounded bg-gray-100 text-2xl cursor-pointer"
+                                onClick={() => adjustCartItem(item.id, -1)}
+                                disabled={item.quantity <= 1}
+                                className="flex items-center justify-center rounded bg-gray-100 text-2xl cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                                aria-label={`Decrease ${item.product.name} quantity`}
                               >
-                                -
+                                <Minus size={14} />
                               </button>
                               <div className="flex items-center justify-center rounded bg-gray-100 text-xs">
                                 {item.quantity}
                               </div>
                               <button
-                                onClick={() => adjustCartItem(item.id, -1)}
+                                onClick={() => adjustCartItem(item.id, 1)}
                                 className="flex items-center justify-center rounded bg-gray-100 text-2xl cursor-pointer"
+                                aria-label={`Increase ${item.product.name} quantity`}
                               >
-                                +
+                                <Plus size={14} />
                               </button>
                             </div>
                             <div className="flex items-center gap-4">

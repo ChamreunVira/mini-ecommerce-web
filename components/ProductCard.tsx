@@ -1,6 +1,6 @@
 'use client';
 import { Product } from '@/types';
-import { ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag } from 'lucide-react';
 import React from 'react';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
@@ -8,11 +8,12 @@ import { useAppContext } from '@/context/AppContextProvider';
 
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   const router = useRouter();
-  const { addToCart } = useAppContext();
+  const { addToCart, wishlist, toggleWishlist } = useAppContext();
   const isAvailable = product.quantity > 0;
+  const isWishlisted = wishlist.some((item) => item.product_id === product.id);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-md border bg-white transition-shadow hover:shadow-sm">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-md border bg-white transition-shadow hover:shadow-sm">
       <button
         type="button"
         onClick={() => router.push(`/products/${product.id}`)}
@@ -31,6 +32,15 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         >
           {isAvailable ? 'In stock' : 'Out of stock'}
         </span>
+      </button>
+      <button
+        type="button"
+        onClick={() => void toggleWishlist(product.id)}
+        aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+        title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+        className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-white/90 text-rose-500 shadow-sm hover:bg-white"
+      >
+        <Heart size={17} fill={isWishlisted ? 'currentColor' : 'none'} />
       </button>
 
       <div className="flex flex-1 flex-col p-4">

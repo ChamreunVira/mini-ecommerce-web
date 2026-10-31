@@ -1,17 +1,21 @@
 'use client';
 import { authService } from '@/services/auth-service';
 import { cartService } from '@/services/cart-service';
-import { Cart, UserResponse } from '@/types';
-import { getToken } from '@/utils/tokenManager';
+import { wishlistService } from '@/services/wishlist-service';
+import { Cart, UserResponse, WishlistItem } from '@/types';
+import { clearToken, getToken } from '@/utils/tokenManager';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface AppCtxValue {
   user: UserResponse | null;
   cart: Cart | null;
-  addToCart: (productId: number, quantity?: number) => void;
-  removeCartItem: (cartItemId: number) => void;
-  adjustCartItem: (cartItemId: number, quantity: number) => void;
+  wishlist: WishlistItem[];
+  addToCart: (productId: number, quantity?: number) => Promise<boolean>;
+  removeCartItem: (cartItemId: number) => Promise<void>;
+  adjustCartItem: (cartItemId: number, quantity: number) => Promise<void>;
+  toggleWishlist: (productId: number) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 export const Provider = createContext<AppCtxValue | null>(null);
@@ -29,17 +33,34 @@ export const useAppContext = (): AppCtxValue => {
 export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [cart, setCart] = useState<Cart | null>(null);
+  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => getToken() !== null);
   const router = useRouter();
 
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch {
+    } finally {
+      clearToken();
+      setUser(null);
+      setCart(null);
+      setWishlist([]);
+      setIsAuthenticated(false);
+      router.replace('/login');
+    }
+  };
+
   const addToCart = async (productId: number, quantity: number = 1) => {
-    // if (!isAuthenticated) router.push('/login');
     try {
       const response = await cartService.add({ product_id: productId, quantity: quantity });
       if (response.success) {
-        fetchCart();
+        setCart(response.data);
+        return true;
       }
-    } catch (error: any) {}
+    } catch {}
+
+    return false;
   };
 
   const removeCartItem = async (itemId: number) => {
@@ -53,31 +74,38 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     try {
       const response = await cartService.remove(itemId);
-      if (response.success) {
-        fetchCart();
-      }
-    } catch (error: any) {}
+      if (response.success)
+        setCart((current) =>
+          current ? { ...current, items: current.items.filter((item) => item.id !== itemId) } : current,
+        );
+    } catch {
+      await fetchCart();
+    }
   };
 
-  const adjustCartItem = async (itemId: number, quantity: number = 1) => {
-    setCart((prev) => {
-      if (prev === null) {
-        return null;
-      }
+  const adjustCartItem = async (itemId: number, delta: number) => {
+    const item = cart?.items.find((cartItem) => cartItem.id === itemId);
+    if (!item) return;
 
-      const { items } = prev;
+    const nextQuantity = item.quantity + delta;
+    if (nextQuantity < 1) return;
 
-      const index = items.findIndex((item) => item.id === itemId);
-      items[index].quantity += quantity;
+    setCart((prev) =>
+      prev
+        ? {
+            ...prev,
+            items: prev.items.map((cartItem) =>
+              cartItem.id === itemId ? { ...cartItem, quantity: nextQuantity } : cartItem,
+            ),
+          }
+        : prev,
+    );
 
-      return { ...prev, items };
-    });
     try {
-      const response = await cartService.adjust(itemId, { quantity });
-      if (response.success) {
-        fetchCart();
-      }
-    } catch (error) {}
+      await cartService.adjust(itemId, { quantity: nextQuantity });
+    } catch {
+      await fetchCart();
+    }
   };
 
   const fetchCart = async () => {
@@ -86,9 +114,32 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (response.success) {
         setCart(response.data);
       }
-    } catch (error: any) {
+    } catch {
       console.log('[Error]: failed to fetch user cart.');
     }
+  };
+
+  const fetchWishlist = async () => {
+    try {
+      const response = await wishlistService.getAll();
+      if (response.success) setWishlist(response.data);
+    } catch {
+      setWishlist([]);
+    }
+  };
+
+  const toggleWishlist = async (productId: number) => {
+    const existing = wishlist.find((item) => item.product_id === productId);
+
+    try {
+      if (existing) {
+        const response = await wishlistService.remove(existing.id);
+        if (response.success) setWishlist((current) => current.filter((item) => item.id !== existing.id));
+      } else {
+        const response = await wishlistService.add(productId);
+        if (response.success) setWishlist((current) => [response.data, ...current]);
+      }
+    } catch {}
   };
 
   useEffect(() => {
@@ -102,21 +153,25 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           setUser(response.data);
           setIsAuthenticated(true);
         }
-      } catch (error: unknown) {}
+      } catch {}
     };
 
     if (isAuthenticated) {
       void currentUser();
       void fetchCart();
+      void Promise.resolve().then(fetchWishlist);
     }
   }, [isAuthenticated]);
 
   const ctxValue: AppCtxValue = {
     user,
     cart,
+    wishlist,
     addToCart,
     removeCartItem,
     adjustCartItem,
+    toggleWishlist,
+    logout,
   };
 
   return <Provider value={ctxValue}>{children}</Provider>;

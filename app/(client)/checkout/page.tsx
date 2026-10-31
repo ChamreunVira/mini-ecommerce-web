@@ -17,6 +17,7 @@ import QrCodeModel from '@/components/QrCodeModel';
 import { paymentService } from '@/services/payment-service';
 import { PaymentMethod, PaymentStatus } from '@/constant';
 import { useRouter } from 'next/navigation';
+import { ArrowLeft, Plus, X } from 'lucide-react';
 
 const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.KHQR);
@@ -31,6 +32,7 @@ const CheckoutPage = () => {
   const [isOpenQrModel, setIsOpenQrModel] = useState<boolean>(false);
   const [addressId, setAddressId] = useState<string>('');
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
 
   const router = useRouter();
 
@@ -50,7 +52,7 @@ const CheckoutPage = () => {
           setIsOpenQrModel(false);
           router.push(`/${response.data.transaction_id}`);
         }
-      } catch (error: any) {
+      } catch {
         console.log('Failed to pooling check transaction.');
       }
     }, 5000);
@@ -61,9 +63,19 @@ const CheckoutPage = () => {
     try {
       const response = await addressService.create(shippingAddress);
       if (response.success) {
-        fetchAddress();
+        setAddressId(String(response.data.id));
+        setIsAddressFormOpen(false);
+        setShippingAddress({
+          recipient_name: '',
+          phone: '',
+          address_line: '',
+          city: 'Phnom Penh',
+          is_default: false,
+        });
+        await fetchAddress();
+        toast.success('Shipping address added.', { position: 'bottom-right' });
       }
-    } catch (error: any) {}
+    } catch {}
   };
 
   const onAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,11 +90,17 @@ const CheckoutPage = () => {
       const response = await addressService.getAll();
       if (response.success) {
         setAddresses(response.data);
+        setAddressId((current) => current || (response.data[0] ? String(response.data[0].id) : ''));
       }
-    } catch (error: any) {}
+    } catch {}
   };
 
   const handleSubmitOrder = async () => {
+    if (!addressId) {
+      toast.error('Please select or create a delivery address.', { position: 'bottom-right' });
+      return;
+    }
+
     const response = await orderService.create({ address_id: Number(addressId) });
     if (response.success) {
       handleCheckout(response.data.id);
@@ -91,7 +109,7 @@ const CheckoutPage = () => {
       });
     }
     try {
-    } catch (error: any) {}
+    } catch {}
   };
 
   const handleCheckout = async (orderId: number) => {
@@ -102,7 +120,7 @@ const CheckoutPage = () => {
         handleCheckTransction();
         setIsOpenQrModel(true);
       }
-    } catch (error: any) {}
+    } catch {}
   };
 
   useEffect(() => {
@@ -110,15 +128,39 @@ const CheckoutPage = () => {
   }, []);
 
   return (
-    <AppContainer className="w-full h-[70vh] my-14">
-      <div className="grid grid-cols-[2fr_1fr] space-x-8">
-        <div className="flex flex-col space-y-8">
+    <AppContainer className="my-6 w-full pb-12 sm:my-10">
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium uppercase tracking-[0.16em] text-indigo-600">Order checkout</p>
+          <h1 className="mt-1 text-2xl font-semibold text-slate-950 sm:text-3xl">Complete your order</h1>
+        </div>
+        <Button type="button" variant="ghost" onClick={() => router.back()} className="shrink-0">
+          <ArrowLeft size={16} />
+          <span className="hidden sm:inline">Back to cart</span>
+          <span className="sm:hidden">Back</span>
+        </Button>
+      </div>
+
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)]">
+        <div className="flex min-w-0 flex-col gap-6">
           {/* select shipping address */}
-          <div className="rounded-md border px-8 py-4">
-            <SectionHeading title="Dilivery Address" />
+          <div className="rounded-md border bg-white px-4 py-5 sm:px-8">
+            <SectionHeading title="Dilivery Address">
+              {addresses.length > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsAddressFormOpen((isOpen) => !isOpen)}
+                >
+                  {isAddressFormOpen ? <X size={15} /> : <Plus size={15} />}
+                  {isAddressFormOpen ? 'Cancel' : 'Add address'}
+                </Button>
+              )}
+            </SectionHeading>
             <div className="mt-4">
-              {addresses.length > 0 ? (
-                <Select onValueChange={setAddressId} defaultValue={addresses[0].address_line}>
+              {addresses.length > 0 && !isAddressFormOpen ? (
+                <Select value={addressId} onValueChange={setAddressId}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Dilevery Address" />
                   </SelectTrigger>
@@ -134,13 +176,14 @@ const CheckoutPage = () => {
                 </Select>
               ) : (
                 <form onSubmit={handleSubmitShippingAddress}>
-                  <div className="grid gap-4 items-center grid-cols-2 mt-4">
+                  <div className="mt-4 grid items-center gap-4 sm:grid-cols-2">
                     <div>
-                      <label htmlFor="">
+                      <label htmlFor="recipient_name">
                         Recipient Name <span className="text-rose-500 font-semibold">*</span>
                       </label>
                       <input
                         name="recipient_name"
+                        id="recipient_name"
                         value={shippingAddress.recipient_name}
                         onChange={onAddressChange}
                         type="text"
@@ -150,12 +193,13 @@ const CheckoutPage = () => {
                     </div>
 
                     <div>
-                      <label htmlFor="">
+                      <label htmlFor="phone">
                         Phone
                         <span className="text-rose-500 font-semibold">*</span>
                       </label>
                       <input
                         name="phone"
+                        id="phone"
                         value={shippingAddress.phone}
                         onChange={onAddressChange}
                         type="text"
@@ -165,11 +209,12 @@ const CheckoutPage = () => {
                     </div>
 
                     <div>
-                      <label htmlFor="">
+                      <label htmlFor="address_line">
                         Address Line <span className="text-rose-500 font-semibold">*</span>
                       </label>
                       <input
                         name="address_line"
+                        id="address_line"
                         value={shippingAddress.address_line}
                         onChange={onAddressChange}
                         type="text"
@@ -179,12 +224,13 @@ const CheckoutPage = () => {
                     </div>
 
                     <div>
-                      <label htmlFor="">
+                      <label htmlFor="city">
                         City
                         <span className="text-rose-500 font-semibold">*</span>
                       </label>
                       <input
                         name="city"
+                        id="city"
                         value={shippingAddress.city}
                         onChange={onAddressChange}
                         type="text"
@@ -204,15 +250,15 @@ const CheckoutPage = () => {
             </div>
           </div>
           {/* list of cart items */}
-          <div className="px-8 py-4 border rounded">
-            <div className="flex items-center space-x-2">
+          <div className="rounded border bg-white px-4 py-5 sm:px-8">
+            <div className="flex items-center gap-2">
               <SectionHeading title="Your Items" />
               <h1 className="text-[16px]">({cart?.items.length || 0})</h1>
             </div>
-            <div className="flex flex-col gap-2 mt-4 max-h-80 overflow-y-scroll scrollbar-thumb-transparent">
+            <div className="mt-4 flex max-h-80 flex-col gap-2 overflow-y-auto scrollbar-thumb-transparent">
               {cart &&
                 cart.items.map((item) => (
-                  <div key={item.id} className="px-3 py-2 flex space-x-2 border rounded">
+                  <div key={item.id} className="flex items-center gap-3 rounded border px-3 py-2">
                     <Image
                       width={50}
                       height={50}
@@ -230,21 +276,21 @@ const CheckoutPage = () => {
           </div>
         </div>
 
-        <div className="h-fit flex flex-col space-y-8 *:border *:px-8 *:py-4">
+        <div className="flex h-fit flex-col gap-6 lg:sticky lg:top-24 [&>div]:rounded-md [&>div]:border [&>div]:bg-white [&>div]:px-4 [&>div]:py-5 sm:[&>div]:px-8">
           {/* payment method */}
           <div className="w-full">
             <SectionHeading title="Payment Method" />
-            <div className="mt-4 flex space-x-4 *:rounded *:px-4 *:py-3 *:border *:cursor-pointer">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <button
                 onClick={() => setPaymentMethod(PaymentMethod.KHQR)}
-                className={`flex items-center gap-4 font-medium text-xl ${paymentMethod === 'khqr' && 'border-indigo-500 text-indigo-500'}`}
+                className={`flex items-center gap-3 rounded border px-3 py-3 text-left font-medium ${paymentMethod === PaymentMethod.KHQR ? 'border-indigo-500 text-indigo-500' : 'border-slate-200'}`}
               >
                 <Image className="w-10" src={BAKONG_LOGO} alt="khqr_bakong_logo" />
                 KHQR
               </button>
               <button
                 onClick={() => setPaymentMethod(PaymentMethod.COD)}
-                className={`flex items-center gap-4 font-medium text-xl ${paymentMethod === 'cod' && 'border-indigo-500 text-indigo-500'}`}
+                className={`flex items-center gap-3 rounded border px-3 py-3 text-left font-medium ${paymentMethod === PaymentMethod.COD ? 'border-indigo-500 text-indigo-500' : 'border-slate-200'}`}
               >
                 <Image className="w-10" src={COD_LOGO} alt="khqr_bakong_logo" />
                 COD
@@ -280,7 +326,7 @@ const CheckoutPage = () => {
                 <h2 className="font-medium text-black">${total.toFixed(2)}</h2>
               </div>
             </div>
-            <Button onClick={handleSubmitOrder} className="w-full mt-4 font-medium text-[16px] h-10">
+            <Button onClick={handleSubmitOrder} className="mt-4 h-11 w-full font-medium text-[16px]">
               <p>Checkout</p>
             </Button>
           </div>

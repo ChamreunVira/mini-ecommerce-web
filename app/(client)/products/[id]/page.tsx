@@ -1,9 +1,8 @@
-import { AppContainer } from "@/components/Container";
-import { Button } from "@/components/ui/button";
-import { productService } from "@/services/product-service";
-import { ShoppingBag } from "lucide-react";
-import Image from "next/image";
-import { Suspense } from "react";
+import { AppContainer } from '@/components/Container';
+import { productService } from '@/services/product-service';
+import Image from 'next/image';
+import { Suspense } from 'react';
+import ProductPurchaseActions from '@/components/ProductPurchaseActions';
 
 interface ProductDetailProps {
   params: Promise<{ id: string }>;
@@ -32,12 +31,10 @@ const ProductDetail = async ({ params }: ProductDetailProps) => {
         <h1 className="text-3xl">{product?.name}</h1>
         <p className="text-[16px] text-gray-800">
           {product?.description ??
-            "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Reprehenderit ut repellat accusamus similique maiores ea deserunt odio error vero accusantium!"}
+            'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Reprehenderit ut repellat accusamus similique maiores ea deserunt odio error vero accusantium!'}
         </p>
         <div>
-          <p className="text-xl text-rose-500 font-medium">
-            $ {product?.price}
-          </p>
+          <p className="text-xl text-rose-500 font-medium">$ {product?.price}</p>
         </div>
         <table>
           <tbody>
@@ -51,25 +48,7 @@ const ProductDetail = async ({ params }: ProductDetailProps) => {
             </tr>
           </tbody>
         </table>
-        {/* stock control */}
-        <div>
-          <button className="w-10 h-10 bg-gray-100 cursor-pointer rounded text-2xl">
-            -
-          </button>
-          <input
-            type="text"
-            defaultValue={1}
-            width={2}
-            className="w-10 h-10 text-xl text-center"
-          />
-          <button className="w-10 h-10 bg-gray-100 cursor-pointer rounded text-2xl">
-            +
-          </button>
-        </div>
-        <Button className="w-full h-12">
-          <ShoppingBag />
-          Add to Cart
-        </Button>
+        <ProductPurchaseActions product={product} />
       </div>
     </div>
   );

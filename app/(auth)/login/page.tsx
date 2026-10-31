@@ -6,29 +6,46 @@ import { setToken } from '@/utils/tokenManager';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
+
+type LoginErrors = Partial<Record<'email' | 'password', string>>;
 
 const LoginPage = () => {
   const [authData, setAuthData] = useState<AuthPaylaod>({
     email: '',
     password: '',
   });
+  const [errors, setErrors] = useState<LoginErrors>({});
   const router = useRouter();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAuthData((prev) => ({ ...prev, [name]: value }));
+    setErrors((previous) => ({ ...previous, [name]: undefined }));
+  };
+
+  const validate = (): LoginErrors => {
+    const nextErrors: LoginErrors = {};
+    if (!authData.email.trim()) nextErrors.email = 'Email is required.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(authData.email)) nextErrors.email = 'Enter a valid email address.';
+    if (!authData.password) nextErrors.password = 'Password is required.';
+    return nextErrors;
   };
 
   const handleSumit = async (e: React.SubmitEvent) => {
     e.preventDefault();
+    const nextErrors = validate();
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     try {
       const response = await authService.login(authData);
       if (response.success) {
         setToken(response.data.token);
-        console.log('[Auth]: Login successfully.');
+        toast.success('Login successful.');
         router.replace('/');
       }
-    } catch (error: unknown) {
-      console.log('Failed to login.', error);
+    } catch {
+      toast.error('Login failed. Check your email and password.');
     }
   };
 
@@ -44,30 +61,44 @@ const LoginPage = () => {
         {/* form */}
         <form method="POST" onSubmit={handleSumit} className="my-4 flex flex-col space-y-4">
           <div className="leading-loose">
-            <label htmlFor="">
+            <label htmlFor="login-email">
               Email <span className="text-rose-500">*</span>
             </label>
             <input
+              id="login-email"
               placeholder="virachamreun@gmail.com"
               onChange={handleChange}
               name="email"
               value={authData.email}
               type="text"
               className="block w-full"
+              aria-invalid={Boolean(errors.email)}
             />
+            {errors.email && (
+              <p className="mt-1 text-sm text-rose-600" role="alert">
+                {errors.email}
+              </p>
+            )}
           </div>
           <div className="leading-loose">
-            <label htmlFor="">
+            <label htmlFor="login-password">
               Password <span className="text-rose-500">*</span>
             </label>
             <input
+              id="login-password"
               onChange={handleChange}
               type="password"
               placeholder="example123"
               name="password"
               value={authData.password}
               className="block w-full"
+              aria-invalid={Boolean(errors.password)}
             />
+            {errors.password && (
+              <p className="mt-1 text-sm text-rose-600" role="alert">
+                {errors.password}
+              </p>
+            )}
             <div className="flex justify-end">
               <Link href="/forgot-password" className="cursor-pointer">
                 <p className="underline text-gray-600">forgot password?</p>

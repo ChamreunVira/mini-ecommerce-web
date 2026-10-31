@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 
 import { KpiCards } from '@/components/KpiCards';
-import { kpiMetrics, monthlyRevenue, orderStatusCounts } from '@/lib/mock/overview-stats';
 import type { Order } from '@/types';
-import { orderService } from '@/services/order-service';
+import type { OverviewResponse } from '@/types';
+import { overviewService } from '@/services/overview-service';
 import { RevenueChart } from '@/components/chart/RevenueChart';
 import { OrderStatusChart } from '@/components/chart/OrderStatusChart';
 import { QuickActions } from '@/components/QuickAction';
@@ -15,17 +15,19 @@ const RECENT_ORDERS_LIMIT = 5;
 
 export default function DashboardOverviewPage() {
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [overview, setOverview] = useState<OverviewResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let isCancelled = false;
 
-    const loadRecentOrders = async () => {
+    const loadOverview = async () => {
       try {
-        const response = await orderService.getAll(1);
+        const response = await overviewService.get();
         if (!isCancelled) {
-          setRecentOrders(response.data.slice(0, RECENT_ORDERS_LIMIT));
+          setOverview(response.data);
+          setRecentOrders(response.data.recent_orders.slice(0, RECENT_ORDERS_LIMIT));
         }
       } catch {
         if (!isCancelled) {
@@ -38,7 +40,7 @@ export default function DashboardOverviewPage() {
       }
     };
 
-    loadRecentOrders();
+    void loadOverview();
 
     return () => {
       isCancelled = true;
@@ -52,11 +54,11 @@ export default function DashboardOverviewPage() {
         <p className="text-sm text-muted-foreground">A summary of your store performance.</p>
       </div>
 
-      <KpiCards metrics={kpiMetrics} />
+      <KpiCards metrics={overview?.metrics ?? []} />
 
       <div className="grid gap-4 lg:grid-cols-7">
-        <RevenueChart data={monthlyRevenue} />
-        <OrderStatusChart data={orderStatusCounts} />
+        <RevenueChart data={overview?.monthly_revenue ?? []} />
+        <OrderStatusChart data={overview?.order_status_counts ?? []} />
       </div>
 
       <QuickActions />

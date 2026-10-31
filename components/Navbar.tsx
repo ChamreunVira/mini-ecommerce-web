@@ -1,10 +1,11 @@
 'use client';
 import React, { useRef } from 'react';
 import { AppContainer } from './Container';
-import { Home, Phone, ShoppingBag, User } from 'lucide-react';
+import { Home, LogOut, Phone, ShoppingBag, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppContext } from '@/context/AppContextProvider';
+import { Button } from './ui/button';
 import { CartDrawer } from './CartDrawer';
 import WishlistDrawer from './WishlistDrawer';
 
@@ -38,7 +39,7 @@ const navItems: Record<string, any>[] = [
 export const Navbar = () => {
   const navRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
-  const { user } = useAppContext();
+  const { user, logout } = useAppContext();
 
   return (
     <header ref={navRef} className="sticky border-b z-50 top-0 left-0 overflow-x-hidden bg-white/90">
@@ -80,9 +81,25 @@ export const Navbar = () => {
             <WishlistDrawer />
           </div>
           {/* user profile */}
-          <div className="bg-gray-100 rounded px-1 py-0.5 flex items-center font-medium text-sm">
-            <User size={28} className="cursor-pointer rounded-full p-1 hover:bg-gray-100" />
-            {user?.name}
+          <div className="flex items-center gap-1">
+            <Link
+              href="/profile"
+              aria-label="Open your profile"
+              className="flex items-center gap-1 rounded bg-gray-100 px-1 py-0.5 text-sm font-medium hover:bg-indigo-50 hover:text-indigo-600"
+            >
+              <User size={28} className="rounded-full p-1" />
+              {user?.name || 'Profile'}
+            </Link>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => void logout()}
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <LogOut size={17} />
+            </Button>
           </div>
         </div>
       </AppContainer>

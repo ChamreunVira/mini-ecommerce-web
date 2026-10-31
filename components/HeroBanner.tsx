@@ -16,24 +16,28 @@ const HeroBanner = () => {
         <div className="absolute -right-16 -top-24 h-64 w-64 rounded-full bg-indigo-100/80" aria-hidden="true" />
         <div className="relative grid items-center gap-8 md:grid-cols-[1.1fr_0.9fr] lg:gap-12">
           <div className="flex flex-col items-start gap-5">
-            <span className="rounded-full border border-indigo-200 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-indigo-700">
-              Welcome to vStore
-            </span>
             <div className="space-y-3">
-              <h1 className="max-w-xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
+              <h1 className="max-w-xl text-2xl font-medium tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
                 Everyday finds, all in one place.
               </h1>
               <p className="max-w-lg text-sm leading-6 text-slate-600 sm:text-base">
-                Explore useful picks for work, home, and everything in between. Compare details, check availability, and find what fits your day.
+                Explore useful picks for work, home, and everything in between. Compare details, check availability, and
+                find what fits your day.
               </p>
             </div>
             <Button onClick={() => router.push('/products')} className="h-11 px-5">
               Explore products <ArrowRight size={16} />
             </Button>
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium text-slate-600 sm:text-sm">
-              <span className="inline-flex items-center gap-1.5"><PackageSearch size={15} className="text-indigo-600" /> Browse by category</span>
-              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={15} className="text-indigo-600" /> See live stock status</span>
-              <span className="inline-flex items-center gap-1.5"><CreditCard size={15} className="text-indigo-600" /> KHQR checkout available</span>
+              <span className="inline-flex items-center gap-1.5">
+                <PackageSearch size={15} className="text-indigo-600" /> Browse by category
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <CheckCircle2 size={15} className="text-indigo-600" /> See live stock status
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <CreditCard size={15} className="text-indigo-600" /> KHQR checkout available
+              </span>
             </div>
           </div>
           <div className="relative mx-auto flex w-full max-w-sm items-center justify-center md:max-w-none">

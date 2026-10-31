@@ -1,11 +1,18 @@
 import { Eye, MoreHorizontal, RefreshCw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCurrency, formatOrderDate } from '@/lib/format';
 import type { Payment } from '@/types';
 import { Badge } from '../ui/badge';
+import { PaymentStatus } from '@/constant';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface PaymentTableProps {
   payments: Payment[];
@@ -16,6 +23,8 @@ interface PaymentTableProps {
   onView: (payment: Payment) => void;
   refreshingPaymentId: number | null;
   onRefreshStatus: (payment: Payment) => void;
+  updatingPaymentId: number | null;
+  onStatusChange: (payment: Payment, status: PaymentStatus) => void;
 }
 
 const COLUMN_COUNT = 7;
@@ -37,6 +46,8 @@ export const PaymentTable = ({
   onView,
   refreshingPaymentId,
   onRefreshStatus,
+  updatingPaymentId,
+  onStatusChange,
 }: PaymentTableProps) => (
   <div className="space-y-4">
     <div className="rounded-md border">
@@ -67,11 +78,32 @@ export const PaymentTable = ({
                 <TableCell>{formatCurrency(payment.amount)}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="capitalize">{payment.status}</Badge>
+                    <Select
+                      value={payment.status}
+                      disabled={updatingPaymentId === payment.id}
+                      onValueChange={(status) => onStatusChange(payment, status as PaymentStatus)}
+                    >
+                      <SelectTrigger
+                        className="h-8 w-32 capitalize"
+                        aria-label={`Update status for ${payment.transaction_id}`}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(PaymentStatus).map((status) => (
+                          <SelectItem key={status} value={status} className="capitalize">
+                            {status}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Badge variant="outline" className="hidden capitalize sm:inline-flex">
+                      {payment.status}
+                    </Badge>
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      disabled={refreshingPaymentId === payment.id}
+                      disabled={refreshingPaymentId === payment.id || updatingPaymentId === payment.id}
                       onClick={() => onRefreshStatus(payment)}
                       aria-label={`Refresh status for ${payment.transaction_id}`}
                     >

@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { Suspense } from 'react';
+import EditCategoryContent from '@/components/EditCategoryContent';
 
-const page = () => {
-  return <div>page</div>;
-};
+const EditCategoryPage = () => (
+  <Suspense fallback={<p>Loading category...</p>}>
+    <EditCategoryContent />
+  </Suspense>
+);
 
-export default page;
+export default EditCategoryPage;

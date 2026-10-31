@@ -15,8 +15,46 @@ export interface PaginationMeta {
   has_more_pages: boolean;
 }
 
+export interface KpiMetric {
+  key:
+    | 'revenue'
+    | 'orders'
+    | 'customers'
+    | 'averageOrderValue'
+    | 'paymentsReceived'
+    | 'successfulPayments'
+    | 'pendingPayments'
+    | 'refundedPayments'
+    | 'failedPayments';
+  title: string;
+  value: number;
+  format: 'currency' | 'number';
+  changePercent: number;
+}
+
+export interface MonthlyRevenue {
+  month: string;
+  revenue: number;
+}
+
+export interface OrderStatusCount {
+  status: string;
+  count: number;
+}
+
+export interface OverviewResponse {
+  metrics: KpiMetric[];
+  monthly_revenue: MonthlyRevenue[];
+  order_status_counts: OrderStatusCount[];
+  recent_orders: Order[];
+}
+
 export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   meta: PaginationMeta;
+}
+
+export interface PaymentListResponse extends PaginatedResponse<Payment> {
+  metrics: KpiMetric[];
 }
 
 export interface BaseEntity {
@@ -71,6 +109,12 @@ export interface Category extends BaseEntity {
 
 export interface Cart extends BaseEntity {
   items: CartItem[];
+}
+
+export interface WishlistItem extends BaseEntity {
+  user_id: number;
+  product_id: number;
+  product: Product;
 }
 
 export type CartItem = {
@@ -136,7 +180,10 @@ export interface PaymentPayload {
   method: PaymentMethod;
 }
 
-export type CreatedPayment = Omit<Payment, 'md5' | 'created_at' | 'updated_at'>;
+export type CreatedPayment = Pick<Payment, 'id' | 'transaction_id' | 'status' | 'amount'> & {
+  qr_string: string;
+  qr_expiry: string;
+};
 
 export interface CategoryPayload {
   name: string;

@@ -12,7 +12,7 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart';
 import { formatNumber } from '@/lib/format';
-import type { OrderStatusCount } from '@/lib/mock/overview-stats';
+import type { OrderStatusCount } from '@/types';
 
 const chartConfig = {
   count: { label: 'Orders' },
@@ -20,12 +20,24 @@ const chartConfig = {
     label: 'Delivered',
     color: 'oklch(0.627 0.194 149.214)', // Green
   },
+  completed: {
+    label: 'Completed',
+    color: 'oklch(0.606 0.154 163.225)', // Teal
+  },
   shipped: {
     label: 'Shipped',
     color: 'oklch(0.623 0.188 259.815)', // Blue
   },
   paid: {
     label: 'Paid',
+    color: 'oklch(0.606 0.154 163.225)', // Teal
+  },
+  processing: {
+    label: 'Processing',
+    color: 'oklch(0.623 0.188 259.815)', // Blue
+  },
+  comfirmed: {
+    label: 'Confirmed',
     color: 'oklch(0.606 0.154 163.225)', // Teal
   },
   pending: {

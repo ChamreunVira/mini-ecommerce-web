@@ -14,8 +14,8 @@ export const cartService = {
     return await http.post('/cart/items', paylaod);
   },
   adjust: async (itemId: number, paylaod: { quantity: number }): Promise<ApiResponse<CartItem>> => {
-    if (paylaod.quantity < 0) {
-      throw Error('Quantity must be greather than zero.');
+    if (paylaod.quantity < 1) {
+      throw Error('Quantity must be greater than zero.');
     }
     return await http.patch(`/cart/items/${itemId}`, paylaod);
   },

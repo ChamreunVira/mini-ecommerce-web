@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, LogOut, Search, Settings, User2 } from 'lucide-react';
+import { Bell, LogOut, Search, Settings } from 'lucide-react';
 
 import { Avatar, AvatarFallback } from './ui/avatar';
 import {
@@ -49,7 +49,7 @@ const buildBreadcrumbSegments = (pathname: string): BreadcrumbSegment[] => {
 };
 
 export const AppNavbar = () => {
-  const { user } = useAppContext();
+  const { user, logout } = useAppContext();
   const pathname = usePathname();
   const breadcrumbSegments = buildBreadcrumbSegments(pathname);
 
@@ -117,7 +117,7 @@ export const AppNavbar = () => {
                 Settings
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => void logout()}>
               <LogOut />
               Sign out
             </DropdownMenuItem>
