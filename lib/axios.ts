@@ -2,7 +2,7 @@ import axios from 'axios';
 import { isAxiosError } from 'axios';
 import { onRequest, onRequestError, onResponse, onResponseError } from './interceptors';
 
-const BASE_URL = 'http://localhost:8000/api';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8000/api';
 
 export const http = axios.create({
   baseURL: BASE_URL,
