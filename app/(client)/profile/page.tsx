@@ -47,7 +47,7 @@ export default function ProfilePage() {
       try {
         const [addressResponse, orderResponse] = await Promise.all([
           addressService.getAll(),
-          orderService.getAll({ page: 1, limit: 50 }),
+          orderService.getUserOrder({ page: 1, limit: 50 }),
         ]);
 
         if (!isActive) return;
@@ -61,6 +61,7 @@ export default function ProfilePage() {
     }
 
     void loadProfile();
+
     return () => {
       isActive = false;
     };

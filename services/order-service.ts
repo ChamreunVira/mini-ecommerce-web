@@ -10,6 +10,9 @@ export const orderService = {
       params,
     });
   },
+  getUserOrder: async (params): Promise<PaginatedResponse<Order>> => {
+    return await http.get(`/order/user`, { params });
+  },
   getById: async (id: number): Promise<ApiResponse<Order>> => {
     return await http.get(`/order/${id}`);
   },

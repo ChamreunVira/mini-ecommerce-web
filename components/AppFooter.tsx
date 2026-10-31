@@ -9,7 +9,7 @@ const AppFooter = () => {
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div className="max-w-xs">
             <Link href="/" className="text-lg font-medium">
-              <span className="font-semibold text-indigo-400">v</span>St4re
+              <span className="font-semibold text-indigo-400">e</span>St4re
             </Link>
             <p className="mt-3 text-sm leading-6 text-gray-400">
               Thoughtful technology and useful essentials for everyday life.
@@ -30,7 +30,7 @@ const AppFooter = () => {
         </div>
 
         <div className="mt-8 flex flex-col gap-2 border-t border-white/15 pt-5 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>2026 vSt4re. All rights reserved.</p>
+          <p>2026 eSt4re. All rights reserved.</p>
           <p>Designed for better everyday living.</p>
         </div>
       </AppContainer>

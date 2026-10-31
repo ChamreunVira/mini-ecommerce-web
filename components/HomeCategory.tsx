@@ -19,18 +19,17 @@ const categoryImages = [
 export const HomeCategory = () => {
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const handleFetchCategory = async () => {
-    try {
-      const response = await categoryService.getAll();
-      if (response.success) {
-        setCategories(response.data.filter((category) => category.status === CategoryStatus.ACTIVE));
-      }
-    } catch (error: unknown) {
-      console.log('Error: failed to fetch categories.', error);
-    }
-  };
-
   useEffect(() => {
+    const handleFetchCategory = async () => {
+      try {
+        const response = await categoryService.getAll();
+        if (response.success) {
+          setCategories(response.data.filter((category) => category.status === CategoryStatus.ACTIVE));
+        }
+      } catch (error: unknown) {
+        console.log('Error: failed to fetch categories.', error);
+      }
+    };
     handleFetchCategory();
     return () => new AbortController().abort();
   }, []);
@@ -49,7 +48,7 @@ export const HomeCategory = () => {
         {categories.slice(0, 4).map((category, index) => (
           <Link
             href={`/products?category=${encodeURIComponent(category.slug)}`}
-            className="group relative min-h-48 overflow-hidden rounded-xl border bg-gray-100 text-left shadow-xs transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="group relative min-h-48 overflow-hidden rounded border bg-gray-100 text-left shadow-xs transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             key={category.id}
             aria-label={`Browse products in ${category.name}`}
           >
