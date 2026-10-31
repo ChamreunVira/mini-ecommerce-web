@@ -44,14 +44,14 @@ const CheckoutPage = () => {
   const subtotal = calculate(cart?.items || []);
   const total = subtotal + fee - discount;
 
-  const handleCheckTransction = () => {
+  const handleCheckTransction = (orderId: number) => {
     const id = setInterval(async () => {
       try {
         const response = await paymentService.check(payment!.transaction_id);
         if (response.success && response.data.status === PaymentStatus.PAID) {
           clearInterval(id);
           setIsOpenQrModel(false);
-          router.push(`/${response.data.transaction_id}`);
+          router.push(`/checkout/${orderId}/success`);
         }
       } catch {
         console.log('Failed to pooling check transaction.');
@@ -102,15 +102,23 @@ const CheckoutPage = () => {
       return;
     }
 
-    const response = await orderService.create({ address_id: Number(addressId) });
-    if (response.success) {
-      handleCheckout(response.data.id);
+    try {
+      const response = await orderService.create({ address_id: Number(addressId) });
+      if (!response.success) return;
+
       toast.success('Order created successfully', {
         position: 'bottom-right',
       });
+
+      if (paymentMethod === PaymentMethod.COD) {
+        router.push(`/checkout/${response.data.id}/success`);
+        return;
+      }
+
+      await handleCheckout(response.data.id);
+    } catch {
+      toast.error('Unable to complete checkout. Please try again.', { position: 'bottom-right' });
     }
-    try {
-    } catch {}
   };
 
   const handleCheckout = async (orderId: number) => {
@@ -118,7 +126,7 @@ const CheckoutPage = () => {
       const response = await paymentService.create({ order_id: orderId, method: paymentMethod });
       if (response.success) {
         SetPayment(response.data);
-        handleCheckTransction();
+        handleCheckTransction(orderId);
         setIsOpenQrModel(true);
       }
     } catch {}

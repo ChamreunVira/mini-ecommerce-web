@@ -66,6 +66,7 @@ export interface BaseEntity {
 export interface UserResponse extends BaseEntity {
   name: string;
   email: string;
+  role: string;
 }
 
 export interface RegisterPayload {

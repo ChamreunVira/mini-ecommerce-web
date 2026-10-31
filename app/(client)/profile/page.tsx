@@ -11,6 +11,7 @@ import { orderService } from '@/services/order-service';
 import type { Address, Order } from '@/types';
 import { Check, Clock3, CreditCard, Home, MapPin, PackageCheck, ReceiptText, Truck, UserRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { AccountSettings } from '@/components/AccountSettings';
 
 const timelineSteps = [
   { status: OrderStatus.PENDING, label: 'Order placed', icon: ReceiptText },
@@ -107,6 +108,10 @@ export default function ProfilePage() {
             {errorMessage}
           </p>
         )}
+
+        <div className="mb-6">
+          <AccountSettings />
+        </div>
 
         <section className="grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.8fr)]">
           <Card className="h-fit">

@@ -112,7 +112,7 @@ export const AppNavbar = () => {
             <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/dashboard/settings">
+              <Link href="/admin/settings">
                 <Settings />
                 Settings
               </Link>

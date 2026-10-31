@@ -9,6 +9,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface AppCtxValue {
   user: UserResponse | null;
+  isAuthLoading: boolean;
+  updateUser: (user: UserResponse) => void;
   cart: Cart | null;
   wishlist: WishlistItem[];
   addToCart: (productId: number, quantity?: number) => Promise<boolean>;
@@ -32,6 +34,7 @@ export const useAppContext = (): AppCtxValue => {
 
 export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserResponse | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(() => getToken() !== null);
   const [cart, setCart] = useState<Cart | null>(null);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => getToken() !== null);
@@ -49,6 +52,10 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setIsAuthenticated(false);
       router.replace('/login');
     }
+  };
+
+  const updateUser = (updatedUser: UserResponse) => {
+    setUser(updatedUser);
   };
 
   const addToCart = async (productId: number, quantity: number = 1) => {
@@ -148,12 +155,16 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const currentUser = async () => {
       try {
         const response = await authService.me();
-        console.log(response.data);
         if (response.success) {
           setUser(response.data);
           setIsAuthenticated(true);
         }
-      } catch {}
+      } catch {
+        setUser(null);
+        setIsAuthenticated(false);
+      } finally {
+        setIsAuthLoading(false);
+      }
     };
 
     if (isAuthenticated) {
@@ -165,6 +176,8 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const ctxValue: AppCtxValue = {
     user,
+    isAuthLoading,
+    updateUser,
     cart,
     wishlist,
     addToCart,
