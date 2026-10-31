@@ -13,6 +13,7 @@ import {
 import { Heart, ShoppingBag, Trash } from 'lucide-react';
 import { useAppContext } from '@/context/AppContextProvider';
 import { Button } from './ui/button';
+import { getProductImageUrl } from '@/lib/product';
 
 const WishlistDrawer = () => {
   const { wishlist, toggleWishlist, addToCart } = useAppContext();
@@ -44,7 +45,7 @@ const WishlistDrawer = () => {
                   <Image
                     width={56}
                     height={56}
-                    src={`http://localhost:8000/storage/${item.product.image_url}`}
+                    src={getProductImageUrl(item.product.image_url)}
                     alt={item.product.name}
                     unoptimized
                   />
