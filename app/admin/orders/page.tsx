@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getErrorMessage } from '@/lib/axios';
 import { formatCurrency, formatOrderDate } from '@/lib/format';
 import { OrderTable } from '@/components/orders/OrderTable';
+import { PrintInvoiceDialog } from '@/components/PrintInvoiceDialog';
 import { orderService } from '@/services/order-service';
 import type { Order, PaginationMeta } from '@/types';
 
@@ -37,6 +38,7 @@ export default function OrdersPage() {
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
 
   const [viewingOrder, setViewingOrder] = useState<Order | null>(null);
+  const [orderToPrint, setOrderToPrint] = useState<Order | null>(null);
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -154,7 +156,10 @@ export default function OrdersPage() {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Search
+            className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             value={searchQuery}
             onChange={(event) => {
@@ -201,6 +206,7 @@ export default function OrdersPage() {
         paginationMeta={pagination}
         onPageChange={setPage}
         onView={setViewingOrder}
+        onPrint={setOrderToPrint}
         onDelete={setOrderToDelete}
         updatingOrderId={updatingOrderId}
         onStatusChange={handleStatusChange}
@@ -238,7 +244,9 @@ export default function OrdersPage() {
               <ul className="space-y-1 text-xs text-muted-foreground">
                 {order.items.map((item) => (
                   <li key={item.id} className="flex justify-between gap-3">
-                    <span className="truncate">{item.product_name} x {item.quantity}</span>
+                    <span className="truncate">
+                      {item.product_name} x {item.quantity}
+                    </span>
                     <span className="shrink-0">{formatCurrency(item.subtotal)}</span>
                   </li>
                 ))}
@@ -255,6 +263,8 @@ export default function OrdersPage() {
           </dl>
         )}
       </ViewResourceDialog>
+
+      <PrintInvoiceDialog order={orderToPrint} onClose={() => setOrderToPrint(null)} />
 
       <DeleteResourceDialog
         resource={orderToDelete}
