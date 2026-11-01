@@ -11,7 +11,7 @@ import { calculate } from '@/utils/calculate';
 import BAKONG_LOGO from '@/public/assets/bakong.png';
 import COD_LOGO from '@/public/assets/cod_icon.png';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import QrCodeModel from '@/components/QrCodeModel';
 import { paymentService } from '@/services/payment-service';
@@ -34,6 +34,7 @@ const CheckoutPage = () => {
   const [addressId, setAddressId] = useState<string>('');
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const router = useRouter();
 
@@ -44,12 +45,21 @@ const CheckoutPage = () => {
   const subtotal = calculate(cart?.items || []);
   const total = subtotal + fee - discount;
 
-  const handleCheckTransction = (orderId: number) => {
+  const stopTransactionPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
+  const handleCheckTransction = (orderId: number, transactionId: string) => {
+    stopTransactionPolling();
     const id = setInterval(async () => {
       try {
-        const response = await paymentService.check(payment!.transaction_id);
+        const response = await paymentService.check(transactionId);
         if (response.success && response.data.status === PaymentStatus.PAID) {
           clearInterval(id);
+          pollingRef.current = null;
           setIsOpenQrModel(false);
           router.push(`/checkout/${orderId}/success`);
         }
@@ -57,6 +67,7 @@ const CheckoutPage = () => {
         console.log('Failed to pooling check transaction.');
       }
     }, 5000);
+    pollingRef.current = id;
   };
 
   const handleSubmitShippingAddress = async (e: React.SubmitEvent) => {
@@ -97,6 +108,12 @@ const CheckoutPage = () => {
   };
 
   const handleSubmitOrder = async () => {
+    if (!cart?.items.length) {
+      toast.error('Your cart is empty. Add an item before checkout.', { position: 'bottom-right' });
+      router.replace('/products');
+      return;
+    }
+
     if (!addressId) {
       toast.error('Please select or create a delivery address.', { position: 'bottom-right' });
       return;
@@ -126,7 +143,7 @@ const CheckoutPage = () => {
       const response = await paymentService.create({ order_id: orderId, method: paymentMethod });
       if (response.success) {
         SetPayment(response.data);
-        handleCheckTransction(orderId);
+        handleCheckTransction(orderId, response.data.transaction_id);
         setIsOpenQrModel(true);
       }
     } catch {}
@@ -135,6 +152,23 @@ const CheckoutPage = () => {
   useEffect(() => {
     void fetchAddress();
   }, []);
+
+  useEffect(() => {
+    if (cart && cart.items.length === 0) {
+      toast.info('Your cart is empty. Add an item before checkout.', { position: 'bottom-right' });
+      router.replace('/products');
+    }
+  }, [cart, router]);
+
+  useEffect(() => {
+    return () => stopTransactionPolling();
+  }, []);
+
+  const handleCloseQrModel = () => {
+    stopTransactionPolling();
+    setIsOpenQrModel(false);
+    router.replace('/products');
+  };
 
   return (
     <AppContainer className="my-6 w-full pb-12 sm:my-10">
@@ -335,7 +369,11 @@ const CheckoutPage = () => {
                 <h2 className="font-medium text-black">${total.toFixed(2)}</h2>
               </div>
             </div>
-            <Button onClick={handleSubmitOrder} className="mt-4 h-11 w-full font-medium text-[16px]">
+            <Button
+              onClick={handleSubmitOrder}
+              disabled={!cart?.items.length}
+              className="mt-4 h-11 w-full font-medium text-[16px]"
+            >
               <p>Checkout</p>
             </Button>
           </div>
@@ -347,7 +385,7 @@ const CheckoutPage = () => {
           qrExpry={payment!.qr_expiry}
           amount={total}
           currency="USD"
-          onClose={() => setIsOpenQrModel(false)}
+          onClose={handleCloseQrModel}
         />
       )}
     </AppContainer>

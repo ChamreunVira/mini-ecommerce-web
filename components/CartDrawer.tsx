@@ -120,7 +120,7 @@ export const CartDrawer = () => {
             )}
           </div>
           <DrawerFooter>
-            <Button onClick={() => router.push('/checkout')}>
+            <Button disabled={!cart?.items.length} onClick={() => router.push('/checkout')}>
               <ShoppingBasket /> Checkout
             </Button>
             <DrawerClose asChild>

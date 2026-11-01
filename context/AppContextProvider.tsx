@@ -6,6 +6,7 @@ import { Cart, UserResponse, WishlistItem } from '@/types';
 import { clearToken, getToken } from '@/utils/tokenManager';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 interface AppCtxValue {
   user: UserResponse | null;
@@ -63,9 +64,12 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const response = await cartService.add({ product_id: productId, quantity: quantity });
       if (response.success) {
         setCart(response.data);
+        toast.success('Item added to cart.');
         return true;
       }
-    } catch {}
+    } catch {
+      toast.error('Unable to add item to cart.');
+    }
 
     return false;
   };
