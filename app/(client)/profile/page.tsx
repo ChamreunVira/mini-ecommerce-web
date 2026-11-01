@@ -204,7 +204,7 @@ export default function ProfilePage() {
       try {
         const [addressResult, orderResult] = await Promise.allSettled([
           addressService.getAll(),
-          orderService.getUserOrder({ page: 1, limit: 50 }),
+          orderService.getUserOrder({ page: 1, limit: 50, sortBy: 'updated_at', direction: 'desc' }),
         ]);
 
         if (!isActive) return;
