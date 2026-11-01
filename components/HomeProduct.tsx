@@ -13,6 +13,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 
 const HomeProduct = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [bestSellingProducts, setBestSellingProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
 
@@ -20,13 +21,17 @@ const HomeProduct = () => {
     let active = true;
     const handleFetchProduct = async () => {
       try {
-        const response = await productService.getAll({});
-        if (active && response.success) {
-          const newest = [...response.data]
+        const [newestResponse, bestSellingResponse] = await Promise.all([
+          productService.getAll({}),
+          productService.getBestSelling(),
+        ]);
+        if (active && newestResponse.success) {
+          const newest = [...newestResponse.data]
             .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
             .slice(0, 8);
           setProducts(newest);
         }
+        if (active && bestSellingResponse.success) setBestSellingProducts(bestSellingResponse.data);
       } catch (error: unknown) {
         if (active) {
           setFailed(true);
@@ -37,7 +42,9 @@ const HomeProduct = () => {
       }
     };
     void handleFetchProduct();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (
@@ -46,7 +53,8 @@ const HomeProduct = () => {
         <SectionHeading title="New arrivals" description="The latest additions to the vStore collection.">
           <Button variant="ghost" className="group text-xs" asChild>
             <Link href="/products">
-              Browse all <ArrowRight size={16} className="transition-transform duration-150 group-hover:translate-x-0.5" />
+              Browse all{' '}
+              <ArrowRight size={16} className="transition-transform duration-150 group-hover:translate-x-0.5" />
             </Link>
           </Button>
         </SectionHeading>
@@ -83,6 +91,33 @@ const HomeProduct = () => {
         ) : (
           <p className="mt-6 rounded-xl border border-dashed px-5 py-8 text-center text-sm text-slate-500">
             New products are on the way. Browse categories to explore the store.
+          </p>
+        )}
+      </section>
+      <section className="mb-14 sm:mb-16">
+        <SectionHeading title="Best sellers" description="Popular products chosen by our customers.">
+          <Button variant="ghost" className="group text-xs" asChild>
+            <Link href="/products">
+              Explore products{' '}
+              <ArrowRight size={16} className="transition-transform duration-150 group-hover:translate-x-0.5" />
+            </Link>
+          </Button>
+        </SectionHeading>
+        {bestSellingProducts.length ? (
+          <Carousel className="mt-6 px-1">
+            <CarouselContent>
+              {bestSellingProducts.map((product) => (
+                <CarouselItem key={product.id} className="basis-[82%] sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                  <ProductCard product={product} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="-left-3 hidden sm:flex" />
+            <CarouselNext className="-right-3 hidden sm:flex" />
+          </Carousel>
+        ) : (
+          <p className="mt-6 rounded-xl border border-dashed px-5 py-8 text-center text-sm text-slate-500">
+            Best sellers will appear after customers place orders.
           </p>
         )}
       </section>

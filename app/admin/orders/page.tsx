@@ -227,6 +227,24 @@ export default function OrdersPage() {
               <dd className="font-medium capitalize">{order.status}</dd>
             </div>
             <div className="flex justify-between gap-4 border-b py-2 text-sm">
+              <dt className="text-muted-foreground">Payment</dt>
+              <dd className="font-medium capitalize">{order.payment?.method ?? 'Pending'}</dd>
+            </div>
+            <div className="border-b py-2 text-sm">
+              <div className="mb-2 flex justify-between gap-4">
+                <dt className="text-muted-foreground">Items</dt>
+                <dd className="font-medium">{order.items.length}</dd>
+              </div>
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                {order.items.map((item) => (
+                  <li key={item.id} className="flex justify-between gap-3">
+                    <span className="truncate">{item.product_name} x {item.quantity}</span>
+                    <span className="shrink-0">{formatCurrency(item.subtotal)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex justify-between gap-4 border-b py-2 text-sm">
               <dt className="text-muted-foreground">Subtotal</dt>
               <dd className="font-medium">{formatCurrency(order.subtotal)}</dd>
             </div>

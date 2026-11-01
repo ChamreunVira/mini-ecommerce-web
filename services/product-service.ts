@@ -30,13 +30,16 @@ export const productService = {
   getById: async (id: number): Promise<ApiResponse<Product>> => {
     return await http.get(`/products/${id}`);
   },
+  getBestSelling: async (limit = 8): Promise<ApiResponse<Product[]>> => {
+    return await http.get('/products/best-selling', { params: { limit } });
+  },
   create: async (payload: ProductPayload): Promise<ApiResponse<Product>> => {
     return await http.post('/products', buildProductFormData(payload), MULTIPART_CONFIG);
   },
   update: async (id: number, payload: ProductPayload): Promise<ApiResponse<Product>> => {
     const formData = buildProductFormData(payload);
     formData.append('_method', 'PUT');
-    return await http.post(`/product/${id}`, formData, MULTIPART_CONFIG);
+    return await http.post(`/products/${id}`, formData, MULTIPART_CONFIG);
   },
   delete: async (id: number): Promise<ApiResponse<null>> => {
     return await http.delete(`/products/${id}`);

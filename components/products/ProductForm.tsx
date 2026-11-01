@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from 'react';
 import { Controller, useForm, type SubmitHandler } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -38,10 +38,17 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(getProductImageUrl(initialProduct?.image_url ?? null));
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
+  const previewObjectUrl = useRef<string | null>(null);
 
   const initialCategoryId = categories.find((category) => category.name === initialProduct?.category)?.id;
 
-  const { register, control, handleSubmit, formState: { errors } } = useForm<ProductFormValues>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProductFormValues>({
     defaultValues: {
       name: initialProduct?.name ?? '',
       description: initialProduct?.description ?? '',
@@ -51,8 +58,7 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
     },
   });
 
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
+  const handleSelectedImage = (selectedFile?: File) => {
     if (!selectedFile) return;
 
     if (!selectedFile.type.startsWith('image/')) {
@@ -66,6 +72,19 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
 
     setImageError(null);
     setImageFile(selectedFile);
+    if (previewObjectUrl.current) URL.revokeObjectURL(previewObjectUrl.current);
+    previewObjectUrl.current = URL.createObjectURL(selectedFile);
+    setPreviewUrl(previewObjectUrl.current);
+  };
+
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    handleSelectedImage(event.target.files?.[0]);
+  };
+
+  const handleImageDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDraggingImage(false);
+    handleSelectedImage(event.dataTransfer.files[0]);
   };
 
   const handleValidSubmit: SubmitHandler<ProductFormValues> = (values) => {
@@ -74,26 +93,22 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
       return;
     }
 
-    if (imageFile) {
-      onSubmit({
-        name: values.name.trim(),
-        description: values.description.trim(),
-        price: Number(values.price),
-        quantity: Number(values.quantity),
-        category_id: Number(values.categoryId),
-        image: imageFile,
-      });
-    }
+    onSubmit({
+      name: values.name.trim(),
+      description: values.description.trim(),
+      price: Number(values.price),
+      quantity: Number(values.quantity),
+      category_id: Number(values.categoryId),
+      image: imageFile ?? undefined,
+    });
   };
 
-  useEffect(() => {
-    if (!imageFile) return;
-
-    const objectUrl = URL.createObjectURL(imageFile);
-    setPreviewUrl(objectUrl);
-
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [imageFile]);
+  useEffect(
+    () => () => {
+      if (previewObjectUrl.current) URL.revokeObjectURL(previewObjectUrl.current);
+    },
+    [],
+  );
 
   return (
     <form onSubmit={handleSubmit(handleValidSubmit)} noValidate>
@@ -101,12 +116,30 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
         <CardContent className="grid gap-6 pt-6 md:grid-cols-[240px_1fr]">
           <div className="space-y-2">
             <Label htmlFor="image">Image</Label>
-            <div className="flex aspect-square items-center justify-center overflow-hidden rounded-md border bg-muted">
+            <div
+              className={`flex aspect-square items-center justify-center overflow-hidden rounded-md border bg-muted transition-colors ${
+                isDraggingImage ? 'border-indigo-500 bg-indigo-50' : 'border-border'
+              }`}
+              onDragEnter={(event) => {
+                event.preventDefault();
+                setIsDraggingImage(true);
+              }}
+              onDragOver={(event) => event.preventDefault()}
+              onDragLeave={(event) => {
+                if (event.currentTarget === event.target) setIsDraggingImage(false);
+              }}
+              onDrop={handleImageDrop}
+              role="button"
+              tabIndex={0}
+              aria-label="Drop an image here"
+            >
               {previewUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={previewUrl} alt="Product preview" className="size-full object-cover" />
               ) : (
-                <span className="text-sm text-muted-foreground">No image selected</span>
+                <span className="px-4 text-center text-sm text-muted-foreground">
+                  {isDraggingImage ? 'Drop image here' : 'Drag an image here or choose a file below'}
+                </span>
               )}
             </div>
             <Input id="image" type="file" accept="image/*" onChange={handleImageChange} />

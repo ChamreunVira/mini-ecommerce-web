@@ -12,7 +12,7 @@ import { formatCurrency, formatOrderDate } from '@/lib/format';
 import type { Payment } from '@/types';
 import { Badge } from '../ui/badge';
 import { PaymentStatus } from '@/constant';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 
 interface PaymentTableProps {
   payments: Payment[];
@@ -28,6 +28,15 @@ interface PaymentTableProps {
 }
 
 const COLUMN_COUNT = 7;
+
+const statusClassNames: Record<PaymentStatus, string> = {
+  [PaymentStatus.PENDING]: 'border-amber-200 bg-amber-50 text-amber-700',
+  [PaymentStatus.PAID]: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  [PaymentStatus.FAILED]: 'border-rose-200 bg-rose-50 text-rose-700',
+  [PaymentStatus.REFUNDED]: 'border-slate-200 bg-slate-50 text-slate-700',
+};
+
+const formatStatus = (status: PaymentStatus) => status.replace('_', ' ');
 
 const TableMessage = ({ message }: { message: string }) => (
   <TableRow>
@@ -51,7 +60,7 @@ export const PaymentTable = ({
 }: PaymentTableProps) => (
   <div className="space-y-4">
     <div className="rounded-md border">
-      <Table>
+      <Table className="min-w-212.5">
         <TableHeader>
           <TableRow>
             <TableHead>#</TableHead>
@@ -73,42 +82,39 @@ export const PaymentTable = ({
             !errorMessage &&
             payments.map((payment) => (
               <TableRow key={payment.id}>
-                <TableCell className="font-medium">{payment.transaction_id}</TableCell>
-                <TableCell className="font-medium">{payment.method}</TableCell>
-                <TableCell>{formatCurrency(payment.amount)}</TableCell>
+                <TableCell className="max-w-56 truncate font-medium" title={payment.transaction_id}>
+                  {payment.transaction_id}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className="uppercase">
+                    {payment.method}
+                  </Badge>
+                </TableCell>
+                <TableCell className="font-medium">{formatCurrency(payment.amount)}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
+                    <Badge variant="outline" className={`capitalize ${statusClassNames[payment.status]}`}>
+                      {formatStatus(payment.status)}
+                    </Badge>
                     <Select
                       value={payment.status}
                       disabled={updatingPaymentId === payment.id}
                       onValueChange={(status) => onStatusChange(payment, status as PaymentStatus)}
                     >
                       <SelectTrigger
-                        className="h-8 w-32 capitalize"
+                        className="h-8 w-8 border-0 p-0 [&>svg]:size-3"
                         aria-label={`Update status for ${payment.transaction_id}`}
                       >
-                        <SelectValue />
+                        <span className="sr-only">Change status</span>
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent position="popper" align="start" className="min-w-40">
                         {Object.values(PaymentStatus).map((status) => (
                           <SelectItem key={status} value={status} className="capitalize">
-                            {status}
+                            {formatStatus(status)}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <Badge variant="outline" className="hidden capitalize sm:inline-flex">
-                      {payment.status}
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      disabled={refreshingPaymentId === payment.id || updatingPaymentId === payment.id}
-                      onClick={() => onRefreshStatus(payment)}
-                      aria-label={`Refresh status for ${payment.transaction_id}`}
-                    >
-                      <RefreshCw className={refreshingPaymentId === payment.id ? 'animate-spin' : ''} />
-                    </Button>
                   </div>
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">{payment.currency}</TableCell>

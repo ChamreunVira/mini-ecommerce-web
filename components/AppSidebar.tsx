@@ -6,12 +6,13 @@ import { usePathname } from 'next/navigation';
 import {
   ChevronsUpDown,
   CreditCard,
-  FolderTree,
+  Boxes,
   LayoutDashboard,
   LogOut,
   Package,
   Plus,
   ShoppingCart,
+  Settings,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -57,7 +58,7 @@ const sidebarNavigationGroups: SidebarNavigationGroup[] = [
       {
         title: 'Categories',
         href: '/admin/categories',
-        icon: FolderTree,
+        icon: Boxes,
         createHref: '/admin/categories/new',
       },
       {
@@ -74,6 +75,10 @@ const sidebarNavigationGroups: SidebarNavigationGroup[] = [
       { title: 'Orders', href: '/admin/orders', icon: ShoppingCart },
       { title: 'Payments', href: '/admin/payments', icon: CreditCard },
     ],
+  },
+  {
+    label: 'Systems',
+    items: [{ title: 'Settings', href: '/admin/settings', icon: Settings }],
   },
 ];
 

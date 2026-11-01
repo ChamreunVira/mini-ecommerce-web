@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { Category, CategoryPayload } from '@/types';
+import { CategoryStatus } from '@/constant';
 import { Checkbox } from '../ui/checkbox';
 
 interface CategoryFormProps {
@@ -16,6 +17,12 @@ interface CategoryFormProps {
   isSubmitting: boolean;
   submitLabel: string;
   onSubmit: (payload: CategoryPayload) => void;
+}
+
+interface CategoryFormValues {
+  name: string;
+  description?: string;
+  status: boolean;
 }
 
 const FieldError = ({ message }: { message?: string }) =>
@@ -26,18 +33,19 @@ export const CategoryForm = ({ initialCategory, isSubmitting, submitLabel, onSub
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CategoryPayload>({
+  } = useForm<CategoryFormValues>({
     defaultValues: {
       name: initialCategory?.name ?? '',
       description: initialCategory?.description ?? '',
+      status: initialCategory?.status === 'active',
     },
   });
 
-  const handleValidSubmit: SubmitHandler<CategoryPayload> = (values) => {
+  const handleValidSubmit: SubmitHandler<CategoryFormValues> = (values) => {
     onSubmit({
       name: values.name.trim(),
       description: values.description?.trim(),
-      status: Boolean(values.status) || true,
+      status: values.status ? CategoryStatus.ACTIVE : CategoryStatus.INACTIVE,
     });
   };
 
@@ -68,7 +76,7 @@ export const CategoryForm = ({ initialCategory, isSubmitting, submitLabel, onSub
 
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="outline" asChild>
-                <Link href="/admin/products">Cancel</Link>
+                <Link href="/admin/categories">Cancel</Link>
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Saving...' : submitLabel}

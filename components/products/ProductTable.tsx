@@ -87,7 +87,9 @@ export const ProductTable = ({
                   <TableCell>
                     <ProductThumbnail imagePath={product.image_url} productName={product.name} />
                   </TableCell>
-                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="font-medium hover:underline cursor-pointer" onClick={() => onView(product)}>
+                    {product.name}
+                  </TableCell>
                   <TableCell className="hidden md:table-cell">{product.category}</TableCell>
                   <TableCell className="hidden md:table-cell">{formatCurrency(product.price)}</TableCell>
                   <TableCell className="hidden sm:table-cell">

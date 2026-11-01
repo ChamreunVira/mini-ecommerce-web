@@ -205,7 +205,7 @@ export default function PaymentsPage() {
               <dd className="font-medium">{formatCurrency(payment.amount)}</dd>
             </div>
             <div className="flex justify-between gap-4 border-b py-2 text-sm">
-              <dt className="text-muted-foreground">Status</dt>http://localhost:3000/admin/overview
+              <dt className="text-muted-foreground">Status</dt>
               <dd className="font-medium capitalize">{payment.status}</dd>
             </div>
             <div className="flex justify-between gap-4 border-b py-2 text-sm">

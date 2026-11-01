@@ -14,11 +14,10 @@ export default function CreateCategoryPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCreate = async (payload: CategoryPayload) => {
-    console.log(payload);
     setIsSubmitting(true);
     try {
       await categoryService.create(payload);
-      toast.success('Product created.');
+      toast.success('Category created.');
       router.push('/admin/categories');
     } catch (error) {
       toast.error(getErrorMessage(error, 'Failed to create product.'));
@@ -31,10 +30,10 @@ export default function CreateCategoryPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Add category</h1>
-        <p className="text-sm text-muted-foreground">Create a new product in your catalog.</p>
+        <p className="text-sm text-muted-foreground">Create a new category in your catalog.</p>
       </div>
 
-      <CategoryForm isSubmitting={isSubmitting} submitLabel="Create product" onSubmit={handleCreate} />
+      <CategoryForm isSubmitting={isSubmitting} submitLabel="Create category" onSubmit={handleCreate} />
     </div>
   );
 }

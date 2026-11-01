@@ -98,7 +98,7 @@ export interface ProductPayload {
   price: number;
   quantity: number;
   category_id: number;
-  image: File;
+  image?: File;
 }
 
 export interface Category extends BaseEntity {
@@ -189,7 +189,7 @@ export type CreatedPayment = Pick<Payment, 'id' | 'transaction_id' | 'status' | 
 export interface CategoryPayload {
   name: string;
   description?: string;
-  status: boolean;
+  status: CategoryStatus;
 }
 
 export interface OrderStatusPayload {

@@ -33,7 +33,7 @@ export default function EditProductContent() {
     try {
       await productService.update(productId, payload);
       toast.success('Product updated.');
-      router.push('/dashboard/products');
+      router.push('/admin/products');
     } catch (error) {
       toast.error(getErrorMessage(error, 'Failed to update product.'));
     } finally {
