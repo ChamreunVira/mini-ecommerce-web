@@ -53,6 +53,8 @@ export default function OrdersPage() {
         const response = await orderService.getAll({
           page,
           limit: PAGE_SIZE,
+          sortBy: 'created_at',
+          direction: 'desc',
         });
 
         if (!isActive) return;
