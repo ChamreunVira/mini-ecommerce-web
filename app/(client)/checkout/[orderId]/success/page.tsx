@@ -8,9 +8,10 @@ import { formatCurrency, formatOrderDate } from '@/lib/format';
 import { CheckCircle2, Home, Package, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 
-const OrderSuccessPage = () => {
+const OrderSuccessContent = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const parsedOrderId = Number(orderId);
   const isValidOrderId = Number.isInteger(parsedOrderId) && parsedOrderId > 0;
@@ -93,5 +94,11 @@ const OrderSuccessPage = () => {
     </main>
   );
 };
+
+const OrderSuccessPage = () => (
+  <Suspense fallback={<main className="min-h-[70vh] bg-slate-50/60 py-10 sm:py-16" />}>
+    <OrderSuccessContent />
+  </Suspense>
+);
 
 export default OrderSuccessPage;
