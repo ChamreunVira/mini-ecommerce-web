@@ -61,9 +61,9 @@ export const HomeCategory = () => {
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
             <div className="absolute inset-x-4 bottom-4 text-white">
               <p className="truncate text-lg font-semibold">{category.name}</p>
-              <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/80">
-                {category.description || `Explore the ${category.name.toLowerCase()} collection.`}
-              </p>
+              {/* <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/80"> */}
+              {/* {category.description || `Explore the ${category.name.toLowerCase()} collection.`} */}
+              {/* </p> */}
             </div>
           </Link>
         ))}

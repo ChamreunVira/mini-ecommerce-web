@@ -46,10 +46,10 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
 
       <div className="flex flex-1 flex-col p-4">
         <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-gray-400">{product.category}</p>
-        <h2 className="mt-2 truncate text-base font-medium text-gray-900">{product.name}</h2>
-        {product.description && (
-          <p className="mt-1 line-clamp-2 text-sm leading-5 text-gray-500">{product.description}</p>
-        )}
+        <h2 className="mt-1 truncate text-base font-medium text-gray-900">{product.name}</h2>
+        {/* {product.description && ( */}
+        {/* <p className="mt-1 line-clamp-2 text-sm leading-5 text-gray-500">{product.description}</p> */}
+        {/* )} */}
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-5">
           <p className="text-lg font-semibold text-gray-950">${Number(product.price).toFixed(2)}</p>

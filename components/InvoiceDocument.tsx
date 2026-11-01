@@ -14,7 +14,9 @@ export function InvoiceDocument({ order }: InvoiceDocumentProps) {
           <p className="mt-1 text-gray-600">{order.order_number}</p>
         </div>
         <div className="text-right">
-          <p className="font-semibold">Your Store Name</p>
+          <p className="font-semibold">
+            <span className="text-indigo-500">Electronic</span> Store
+          </p>
           <p className="text-gray-600">Phnom Penh, Cambodia</p>
         </div>
       </header>

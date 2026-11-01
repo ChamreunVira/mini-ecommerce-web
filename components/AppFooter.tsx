@@ -1,36 +1,81 @@
 import Link from 'next/link';
-import React from 'react';
+
 import { AppContainer } from './Container';
 
+interface FooterLink {
+  label: string;
+  href: string;
+}
+
+interface FooterLinkGroup {
+  title: string;
+  links: FooterLink[];
+}
+
+const FOOTER_LINK_GROUPS: FooterLinkGroup[] = [
+  {
+    title: 'Shop',
+    links: [
+      { label: 'All products', href: '/products' },
+      { label: 'Home', href: '/' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { label: 'About', href: '/about' },
+      { label: 'Contact', href: '/contact' },
+    ],
+  },
+  {
+    title: 'Account',
+    links: [
+      { label: 'My profile', href: '/profile' },
+      { label: 'My orders', href: '/profile' },
+    ],
+  },
+];
+
 const AppFooter = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="mt-16 bg-gray-800 text-white">
-      <AppContainer className="py-10 md:py-12">
-        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-xs">
-            <Link href="/" className="text-lg font-medium">
+    <footer className="mt-16 border-t border-white/10 bg-gray-900 text-white">
+      <AppContainer className="py-12 md:py-16">
+        <div className="grid gap-10 md:grid-cols-[1.5fr_2fr] lg:gap-16">
+          {/* brand */}
+          <div className="max-w-sm">
+            <Link href="/" className="text-xl font-medium">
               <span className="font-semibold text-indigo-400">e</span>St4re
             </Link>
-            <p className="mt-3 text-sm leading-6 text-gray-400">
+            <p className="mt-4 text-sm leading-6 text-gray-400">
               Thoughtful technology and useful essentials for everyday life.
             </p>
+            <p className="mt-4 text-sm text-gray-500">Phnom Penh, Cambodia</p>
           </div>
 
-          <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-x-12 gap-y-3 text-sm sm:flex sm:gap-8">
-            <Link href="/products" className="text-gray-300 transition-colors hover:text-white">
-              Products
-            </Link>
-            <Link href="/about" className="text-gray-300 transition-colors hover:text-white">
-              About
-            </Link>
-            <Link href="/contact" className="text-gray-300 transition-colors hover:text-white">
-              Contact
-            </Link>
+          {/* link columns */}
+          <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+            {FOOTER_LINK_GROUPS.map((group) => (
+              <div key={group.title}>
+                <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">{group.title}</h2>
+                <ul className="mt-4 space-y-3">
+                  {group.links.map((link) => (
+                    <li key={link.label}>
+                      <Link href={link.href} className="text-sm text-gray-300 transition-colors hover:text-indigo-400">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </nav>
         </div>
 
-        <div className="mt-8 flex flex-col gap-2 border-t border-white/15 pt-5 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>2026 eSt4re. All rights reserved.</p>
+        {/* bottom bar */}
+        <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; {currentYear} eSt4re. All rights reserved.</p>
           <p>Designed for better everyday living.</p>
         </div>
       </AppContainer>
