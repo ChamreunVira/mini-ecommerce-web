@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { AppContainer } from './Container';
+import { CurrentYear } from './CurrentYear';
 
 interface FooterLink {
   label: string;
@@ -37,8 +38,6 @@ const FOOTER_LINK_GROUPS: FooterLinkGroup[] = [
 ];
 
 const AppFooter = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
     <footer className="mt-16 border-t border-white/10 bg-gray-900 text-white">
       <AppContainer className="py-12 md:py-16">
@@ -75,7 +74,7 @@ const AppFooter = () => {
 
         {/* bottom bar */}
         <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {currentYear} eSt4re. All rights reserved.</p>
+          <p>&copy; <CurrentYear /> eSt4re. All rights reserved.</p>
           <p>Designed for better everyday living.</p>
         </div>
       </AppContainer>
