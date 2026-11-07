@@ -60,6 +60,11 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const addToCart = async (productId: number, quantity: number = 1) => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return false;
+    }
+
     try {
       const response = await cartService.add({ product_id: productId, quantity: quantity });
       if (response.success) {
