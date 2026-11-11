@@ -50,8 +50,11 @@ export const useProductFilters = (products: Product[]) => {
         normalizedQuery === '' ||
         product.name.toLocaleLowerCase().includes(normalizedQuery) ||
         product.category.toLocaleLowerCase().includes(normalizedQuery);
+
       const matchesCategory = filters.category === 'all' || product.category === filters.category;
+
       const matchesStock = filters.stock === 'all' || getStockStatus(product.quantity) === filters.stock;
+
       return matchesSearch && matchesCategory && matchesStock;
     });
 
@@ -64,7 +67,10 @@ export const useProductFilters = (products: Product[]) => {
 
   const resetFilters = () => setFilters(DEFAULT_FILTERS);
   const hasActiveFilters =
-    filters.searchQuery.trim() !== '' || filters.category !== 'all' || filters.stock !== 'all' || filters.sort !== 'newest';
+    filters.searchQuery.trim() !== '' ||
+    filters.category !== 'all' ||
+    filters.stock !== 'all' ||
+    filters.sort !== 'newest';
 
   return {
     filters,
