@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { ArrowRight, MapPin, Search, Truck, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { OrderStatus } from '@/constant';
@@ -18,6 +18,7 @@ import { orderService } from '@/services/order-service';
 import type { Order, PaginationMeta } from '@/types';
 
 const PAGE_SIZE = 10;
+const ADMIN_FULFILLMENT_LOCATION = 'Phnom Penh, Cambodia';
 
 const INITIAL_PAGINATION: PaginationMeta = {
   current_page: 1,
@@ -221,48 +222,78 @@ export default function OrdersPage() {
         getDescription={(order) => `Placed on ${formatOrderDate(order.created_at)}`}
       >
         {(order) => (
-          <dl className="space-y-2">
-            <div className="flex justify-between gap-4 border-b py-2 text-sm">
-              <dt className="text-muted-foreground">Customer</dt>
-              <dd className="text-right font-medium">{order.address?.recipient_name ?? 'Guest'}</dd>
-            </div>
-            <div className="flex justify-between gap-4 border-b py-2 text-sm">
-              <dt className="text-muted-foreground">Phone</dt>
-              <dd className="font-medium">{order.address?.phone ?? 'N/A'}</dd>
-            </div>
-            <div className="flex justify-between gap-4 border-b py-2 text-sm">
-              <dt className="text-muted-foreground">Status</dt>
-              <dd className="font-medium capitalize">{order.status}</dd>
-            </div>
-            <div className="flex justify-between gap-4 border-b py-2 text-sm">
-              <dt className="text-muted-foreground">Payment</dt>
-              <dd className="font-medium capitalize">{order.payment?.method ?? 'Pending'}</dd>
-            </div>
-            <div className="border-b py-2 text-sm">
-              <div className="mb-2 flex justify-between gap-4">
-                <dt className="text-muted-foreground">Items</dt>
-                <dd className="font-medium">{order.items.length}</dd>
+          <div className="space-y-4">
+            <section className="rounded-md border bg-slate-50/70 p-3" aria-label="Carrier route">
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium">
+                <Truck className="size-4 text-indigo-600" aria-hidden="true" />
+                Carrier route
               </div>
-              <ul className="space-y-1 text-xs text-muted-foreground">
-                {order.items.map((item) => (
-                  <li key={item.id} className="flex justify-between gap-3">
-                    <span className="truncate">
-                      {item.product_name} x {item.quantity}
-                    </span>
-                    <span className="shrink-0">{formatCurrency(item.subtotal)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex justify-between gap-4 border-b py-2 text-sm">
-              <dt className="text-muted-foreground">Subtotal</dt>
-              <dd className="font-medium">{formatCurrency(order.subtotal)}</dd>
-            </div>
-            <div className="flex justify-between gap-4 py-2 text-sm">
-              <dt className="text-muted-foreground">Total</dt>
-              <dd className="font-medium">{formatCurrency(order.total)}</dd>
-            </div>
-          </dl>
+              <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-2 text-xs">
+                <div className="min-w-0">
+                  <div className="mb-1 flex items-center gap-1 font-medium text-slate-900">
+                    <MapPin className="size-3.5 textj-indigo-600" aria-hidden="true" />
+                    From
+                  </div>
+                  <p className="wrap-break-word text-muted-foreground">{ADMIN_FULFILLMENT_LOCATION}</p>
+                </div>
+                <ArrowRight className="mt-1 size-4 text-muted-foreground" aria-hidden="true" />
+                <div className="min-w-0 text-right">
+                  <div className="mb-1 flex items-center justify-end gap-1 font-medium text-slate-900">
+                    <MapPin className="size-3.5 text-rose-600" aria-hidden="true" />
+                    To
+                  </div>
+                  <p className="wrap-break-word text-muted-foreground">
+                    {order.address
+                      ? `${order.address.address_line}, ${order.address.city}`
+                      : 'Delivery address unavailable'}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <dl className="space-y-2">
+              <div className="flex justify-between gap-4 border-b py-2 text-sm">
+                <dt className="text-muted-foreground">Customer</dt>
+                <dd className="text-right font-medium">{order.address?.recipient_name ?? 'Guest'}</dd>
+              </div>
+              <div className="flex justify-between gap-4 border-b py-2 text-sm">
+                <dt className="text-muted-foreground">Phone</dt>
+                <dd className="font-medium">{order.address?.phone ?? 'N/A'}</dd>
+              </div>
+              <div className="flex justify-between gap-4 border-b py-2 text-sm">
+                <dt className="text-muted-foreground">Status</dt>
+                <dd className="font-medium capitalize">{order.status}</dd>
+              </div>
+              <div className="flex justify-between gap-4 border-b py-2 text-sm">
+                <dt className="text-muted-foreground">Payment</dt>
+                <dd className="font-medium capitalize">{order.payment?.method ?? 'Pending'}</dd>
+              </div>
+              <div className="border-b py-2 text-sm">
+                <div className="mb-2 flex justify-between gap-4">
+                  <dt className="text-muted-foreground">Items</dt>
+                  <dd className="font-medium">{order.items.length}</dd>
+                </div>
+                <ul className="space-y-1 text-xs text-muted-foreground">
+                  {order.items.map((item) => (
+                    <li key={item.id} className="flex justify-between gap-3">
+                      <span className="truncate">
+                        {item.product_name} x {item.quantity}
+                      </span>
+                      <span className="shrink-0">{formatCurrency(item.subtotal)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex justify-between gap-4 border-b py-2 text-sm">
+                <dt className="text-muted-foreground">Subtotal</dt>
+                <dd className="font-medium">{formatCurrency(order.subtotal)}</dd>
+              </div>
+              <div className="flex justify-between gap-4 py-2 text-sm">
+                <dt className="text-muted-foreground">Total</dt>
+                <dd className="font-medium">{formatCurrency(order.total)}</dd>
+              </div>
+            </dl>
+          </div>
         )}
       </ViewResourceDialog>
 
