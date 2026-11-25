@@ -28,18 +28,18 @@ export const ProductFilters = ({
         onChange={(event) => onChange({ searchQuery: event.target.value })}
         placeholder="Search by name or category..."
         aria-label="Search products by name or category"
-        className="pl-8"
+        className="pl-8 rounded-sm shadow-none border-border"
       />
     </div>
 
     <Select value={filters.category} onValueChange={(category) => onChange({ category })}>
-      <SelectTrigger className="w-full lg:w-44">
+      <SelectTrigger className="w-full lg:w-44 rounded-sm shadow-none border-border">
         <SelectValue placeholder="Category" />
       </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All categories</SelectItem>
+      <SelectContent className="rounded-sm shadow-none border-border">
+        <SelectItem value="all" className="rounded-sm">All categories</SelectItem>
         {categoryNames.map((categoryName) => (
-          <SelectItem key={categoryName} value={categoryName}>
+          <SelectItem key={categoryName} value={categoryName} className="rounded-sm">
             {categoryName}
           </SelectItem>
         ))}
@@ -47,33 +47,33 @@ export const ProductFilters = ({
     </Select>
 
     <Select value={filters.stock} onValueChange={(stock) => onChange({ stock: stock as StockFilter })}>
-      <SelectTrigger className="w-full lg:w-40">
+      <SelectTrigger className="w-full lg:w-40 rounded-sm shadow-none border-border">
         <SelectValue placeholder="Stock" />
       </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All stock</SelectItem>
-        <SelectItem value="in_stock">In stock</SelectItem>
-        <SelectItem value="low_stock">Low stock</SelectItem>
-        <SelectItem value="out_of_stock">Out of stock</SelectItem>
+      <SelectContent className="rounded-sm shadow-none border-border">
+        <SelectItem value="all" className="rounded-sm">All stock</SelectItem>
+        <SelectItem value="in_stock" className="rounded-sm">In stock</SelectItem>
+        <SelectItem value="low_stock" className="rounded-sm">Low stock</SelectItem>
+        <SelectItem value="out_of_stock" className="rounded-sm">Out of stock</SelectItem>
       </SelectContent>
     </Select>
 
     <Select value={filters.sort} onValueChange={(sort) => onChange({ sort: sort as SortOption })}>
-      <SelectTrigger className="w-full lg:w-48">
+      <SelectTrigger className="w-full lg:w-48 rounded-sm shadow-none border-border">
         <SelectValue placeholder="Sort by" />
       </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="newest">Newest first</SelectItem>
-        <SelectItem value="oldest">Oldest first</SelectItem>
-        <SelectItem value="name_asc">Name (A-Z)</SelectItem>
-        <SelectItem value="price_asc">Price: low to high</SelectItem>
-        <SelectItem value="price_desc">Price: high to low</SelectItem>
-        <SelectItem value="quantity_asc">Quantity: low to high</SelectItem>
+      <SelectContent className="rounded-sm shadow-none border-border">
+        <SelectItem value="newest" className="rounded-sm">Newest first</SelectItem>
+        <SelectItem value="oldest" className="rounded-sm">Oldest first</SelectItem>
+        <SelectItem value="name_asc" className="rounded-sm">Name (A-Z)</SelectItem>
+        <SelectItem value="price_asc" className="rounded-sm">Price: low to high</SelectItem>
+        <SelectItem value="price_desc" className="rounded-sm">Price: high to low</SelectItem>
+        <SelectItem value="quantity_asc" className="rounded-sm">Quantity: low to high</SelectItem>
       </SelectContent>
     </Select>
 
     {hasActiveFilters && (
-      <Button variant="ghost" onClick={onReset}>
+      <Button variant="ghost" onClick={onReset} className="rounded-sm shadow-none">
         <X />
         Reset
       </Button>

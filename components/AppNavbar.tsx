@@ -96,7 +96,7 @@ export const AppNavbar = () => {
             <div className="flex items-center space-x-2">
               <Button variant="ghost" size="icon" className="rounded-full" aria-label="Open account menu">
                 <Avatar className="size-8">
-                  <AvatarFallback className="flex items-center justify-center font-semibold text-indigo-500 bg-indigo-50">
+                  <AvatarFallback className="flex items-center justify-center font-semibold text-rose-600 bg-rose-50">
                     CV
                     {/* <User2 className="size-4" /> */}
                   </AvatarFallback>

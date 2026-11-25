@@ -112,13 +112,13 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
 
   return (
     <form onSubmit={handleSubmit(handleValidSubmit)} noValidate>
-      <Card>
+      <Card className="rounded-md shadow-none">
         <CardContent className="grid gap-6 pt-6 md:grid-cols-[240px_1fr]">
           <div className="space-y-2">
             <Label htmlFor="image">Image</Label>
             <div
               className={`flex aspect-square items-center justify-center overflow-hidden rounded-md border bg-muted transition-colors ${
-                isDraggingImage ? 'border-indigo-500 bg-indigo-50' : 'border-border'
+                isDraggingImage ? 'border-orange-500 bg-orange-50' : 'border-border'
               }`}
               onDragEnter={(event) => {
                 event.preventDefault();
@@ -142,7 +142,7 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
                 </span>
               )}
             </div>
-            <Input id="image" type="file" accept="image/*" onChange={handleImageChange} />
+            <Input className="rounded-md" id="image" type="file" accept="image/*" onChange={handleImageChange} />
             <FieldError message={imageError ?? undefined} />
           </div>
 
@@ -150,6 +150,7 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input
+                className="rounded-md"
                 id="name"
                 placeholder="iPhone 12 Pro Max"
                 {...register('name', { required: 'Name is required.' })}
@@ -166,6 +167,7 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
               <div className="space-y-2">
                 <Label htmlFor="price">Price (USD)</Label>
                 <Input
+                  className="rounded-md"
                   id="price"
                   type="number"
                   step="0.01"
@@ -181,6 +183,7 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
               <div className="space-y-2">
                 <Label htmlFor="quantity">Quantity</Label>
                 <Input
+                  className="rounded-md"
                   id="quantity"
                   type="number"
                   step="1"
@@ -222,10 +225,10 @@ export const ProductForm = ({ categories, initialProduct, isSubmitting, submitLa
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="outline" asChild>
+              <Button className="rounded-md" type="button" variant="outline" asChild>
                 <Link href="/admin/products">Cancel</Link>
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button className="rounded-md" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Saving...' : submitLabel}
               </Button>
             </div>

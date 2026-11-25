@@ -28,23 +28,23 @@ export function PrintInvoiceDialog({ order, onClose }: PrintInvoiceDialogProps) 
   return (
     <>
       <Dialog open={order !== null} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl rounded-sm shadow-none border-border">
           <DialogHeader>
             <DialogTitle>Invoice {order?.order_number}</DialogTitle>
             <DialogDescription>Preview the invoice before printing.</DialogDescription>
           </DialogHeader>
 
           {order && (
-            <div className="overflow-hidden rounded-md border">
+            <div className="overflow-hidden rounded-sm border border-slate-200 shadow-none">
               <InvoiceDocument order={order} />
             </div>
           )}
 
           <DialogFooter>
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} className="rounded-sm shadow-none">
               Close
             </Button>
-            <Button onClick={() => window.print()}>
+            <Button onClick={() => window.print()} className="rounded-sm shadow-none">
               <Printer />
               Print
             </Button>

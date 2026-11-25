@@ -124,7 +124,7 @@ export default function ProductsPage() {
           <p className="text-sm text-muted-foreground">Manage your catalog, pricing, and stock.</p>
         </div>
 
-        <Button asChild>
+        <Button asChild className="rounded-sm shadow-none">
           <Link href="/admin/products/new">
             <Plus />
             Add product

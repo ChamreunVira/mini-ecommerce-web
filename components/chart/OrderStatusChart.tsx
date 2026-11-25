@@ -62,7 +62,7 @@ export const OrderStatusChart = ({ data }: OrderStatusChartProps) => {
   }));
 
   return (
-    <Card className="lg:col-span-3">
+    <Card className="lg:col-span-3 rounded-sm shadow-none border-border">
       <CardHeader>
         <CardTitle>Orders by Status</CardTitle>
         <CardDescription>Distribution of all orders</CardDescription>

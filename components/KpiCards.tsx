@@ -16,7 +16,7 @@ export const KpiCards = ({ metrics }: KpiCardsProps) => (
       const TrendIcon = isPositiveChange ? ArrowUpRight : ArrowDownRight;
 
       return (
-        <Card key={metric.key}>
+        <Card key={metric.key} className="rounded-sm shadow-none border-border">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">{metric.title}</CardTitle>
           </CardHeader>

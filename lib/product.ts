@@ -16,4 +16,17 @@ export const getStockStatus = (quantity: number): StockStatus => {
 
 const STORAGE_BASE_URL = process.env.NEXT_PUBLIC_STORAGE_URL ?? 'http://localhost:8000/storage';
 
-export const getProductImageUrl = (imagePath: string | null): string => `${STORAGE_BASE_URL}/${imagePath}`;
+export const getProductImageUrl = (imagePath: string | null | undefined): string => {
+  if (!imagePath || imagePath === 'null' || imagePath === 'undefined') {
+    return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80';
+  }
+  if (
+    imagePath.startsWith('http://') ||
+    imagePath.startsWith('https://') ||
+    imagePath.startsWith('data:') ||
+    imagePath.startsWith('/')
+  ) {
+    return imagePath;
+  }
+  return `${STORAGE_BASE_URL}/${imagePath}`;
+};

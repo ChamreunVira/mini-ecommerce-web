@@ -55,7 +55,7 @@ export const ProductTable = ({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
+      <div className="rounded-sm border border-slate-200 shadow-none bg-white">
         <Table>
           <TableHeader>
             <TableRow>

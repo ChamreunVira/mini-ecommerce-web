@@ -21,7 +21,7 @@ export const ViewResourceDialog = <TResource,>({
   className,
 }: ViewResourceDialogProps<TResource>) => (
   <Dialog open={resource !== null} onOpenChange={(isOpen) => !isOpen && onClose()}>
-    <DialogContent className={cn('sm:max-w-md', className)}>
+    <DialogContent className={cn('sm:max-w-md rounded-sm shadow-none border-border', className)}>
       {resource && (
         <>
           <DialogHeader>

@@ -15,7 +15,7 @@ interface RevenueChartProps {
 }
 
 export const RevenueChart = ({ data }: RevenueChartProps) => (
-  <Card className="lg:col-span-4">
+  <Card className="lg:col-span-4 rounded-sm shadow-none border-border">
     <CardHeader>
       <CardTitle>Revenue by Month</CardTitle>
       <CardDescription>Total sales for the current year</CardDescription>

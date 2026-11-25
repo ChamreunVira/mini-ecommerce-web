@@ -19,7 +19,7 @@ interface DeleteProductDialogProps {
 
 export const DeleteProductDialog = ({ product, isDeleting, onConfirm, onClose }: DeleteProductDialogProps) => (
   <AlertDialog open={product !== null} onOpenChange={(isOpen) => !isOpen && onClose()}>
-    <AlertDialogContent>
+    <AlertDialogContent className="rounded-sm shadow-none border-border">
       <AlertDialogHeader>
         <AlertDialogTitle>Delete product?</AlertDialogTitle>
         <AlertDialogDescription>
@@ -27,9 +27,10 @@ export const DeleteProductDialog = ({ product, isDeleting, onConfirm, onClose }:
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+        <AlertDialogCancel disabled={isDeleting} className="rounded-sm shadow-none">Cancel</AlertDialogCancel>
         <AlertDialogAction
           disabled={isDeleting}
+          className="rounded-sm shadow-none"
           onClick={(event) => {
             event.preventDefault();
             onConfirm();

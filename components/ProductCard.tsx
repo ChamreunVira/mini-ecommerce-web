@@ -1,62 +1,96 @@
 'use client';
-import { Product } from '@/types';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
 import { Heart, ShoppingBag } from 'lucide-react';
-import React from 'react';
-import { Button } from './ui/button';
-import { useRouter } from 'next/navigation';
+import { Product } from '@/types';
 import { useAppContext } from '@/context/AppContextProvider';
 import { getProductImageUrl } from '@/lib/product';
 
-const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
-  const router = useRouter();
+interface ProductCardProps {
+  product: Product;
+  className?: string;
+}
+
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80';
+
+const ProductCard: React.FC<ProductCardProps> = ({ product, className = '' }) => {
   const { addToCart, wishlist, toggleWishlist } = useAppContext();
+  const [imgSrc, setImgSrc] = useState<string>(() => getProductImageUrl(product.image_url));
   const isAvailable = product.quantity > 0;
   const isWishlisted = wishlist.some((item) => item.product_id === product.id);
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-md border bg-white transition-shadow hover:shadow-sm">
-      <button
-        type="button"
-        onClick={() => router.push(`/products/${product.id}`)}
-        className="relative aspect-square w-full overflow-idden bg-slate-50 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset"
-        aria-label={`View ${product.name}`}
-      >
-        <img
-          className="h-full w-full object-contain p-6 transition-transform duration-300 group-hover:scale-105"
-          src={getProductImageUrl(product.image_url)}
-          alt={product.name}
-        />
-        <span
-          className={`absolute left-3 top-3 rounded-sm px-2 py-1 text-[11px] font-medium ${
-            isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'
-          }`}
+    <article
+      className={`group flex h-full flex-col overflow-hidden rounded-sm border border-slate-200/80 bg-white transition-colors hover:border-slate-300 ${className}`}
+    >
+      {/* Thumbnail */}
+      <div className="relative aspect-square w-full overflow-hidden bg-slate-50 p-3 sm:p-4">
+        <Link
+          href={`/products/${product.id}`}
+          className="flex size-full items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E]"
+          aria-label={`View ${product.name}`}
         >
-          {isAvailable ? 'In stock' : 'Out of stock'}
-        </span>
-      </button>
-      <button
-        type="button"
-        onClick={() => void toggleWishlist(product.id)}
-        aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
-        title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-        className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-white/90 text-rose-500 shadow-sm hover:bg-white"
-      >
-        <Heart size={17} fill={isWishlisted ? 'currentColor' : 'none'} />
-      </button>
+          <img
+            className="size-full object-contain"
+            src={imgSrc}
+            alt={product.name}
+            loading="lazy"
+            onError={() => setImgSrc(FALLBACK_IMG)}
+          />
+        </Link>
 
-      <div className="flex flex-1 flex-col p-4">
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-gray-400">{product.category}</p>
-        <h2 className="mt-1 truncate text-base font-medium text-gray-900">{product.name}</h2>
-        {/* {product.description && ( */}
-        {/* <p className="mt-1 line-clamp-2 text-sm leading-5 text-gray-500">{product.description}</p> */}
-        {/* )} */}
+        {!isAvailable && (
+          <span className="absolute left-2.5 top-2.5 rounded-sm bg-slate-200/80 px-2 py-0.5 text-[10px] font-medium text-slate-700">
+            Sold out
+          </span>
+        )}
 
-        <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-          <p className="text-lg font-semibold text-gray-950">${Number(product.price).toFixed(2)}</p>
-          <Button size="sm" disabled={!isAvailable} onClick={() => addToCart(product.id)}>
-            <ShoppingBag size={16} />
-            Add
-          </Button>
+        {/* Top-Right Favorite Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void toggleWishlist(product.id);
+          }}
+          aria-label={isWishlisted ? `Remove ${product.name} from favorites` : `Add ${product.name} to favorites`}
+          title={isWishlisted ? 'Remove from favorites' : 'Add to favorites'}
+          className="absolute right-2.5 top-2.5 flex size-7 items-center justify-center rounded-sm border border-slate-200/80 bg-white/90 text-slate-600 transition-colors hover:border-slate-300 hover:text-[#C8102E] cursor-pointer"
+        >
+          <Heart
+            size={13}
+            className={isWishlisted ? 'text-[#C8102E]' : undefined}
+            fill={isWishlisted ? '#C8102E' : 'none'}
+          />
+        </button>
+      </div>
+
+      {/* Details */}
+      <div className="flex flex-1 flex-col p-3 sm:p-3.5">
+        <h3 className="truncate text-xs sm:text-sm font-medium text-slate-900 group-hover:text-[#C8102E] transition-colors">
+          <Link href={`/products/${product.id}`}>{product.name}</Link>
+        </h3>
+
+        <div className="mt-auto flex items-center justify-between gap-2 pt-2.5 mt-2 border-t border-slate-100">
+          <p className="text-sm sm:text-base font-bold text-slate-900 tabular-nums">
+            ${Number(product.price).toFixed(2)}
+          </p>
+
+          <button
+            type="button"
+            disabled={!isAvailable}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              addToCart(product.id);
+            }}
+            aria-label={`Add ${product.name} to cart`}
+            title="Add to cart"
+            className="flex size-7 items-center justify-center rounded-sm bg-[#C8102E] text-white transition-colors hover:bg-[#a50d26] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <ShoppingBag size={13} />
+          </button>
         </div>
       </div>
     </article>

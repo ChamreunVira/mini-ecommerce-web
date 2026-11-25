@@ -1,78 +1,142 @@
 'use client';
-import { categoryService } from '@/services/category-service';
-import React, { useEffect, useState } from 'react';
-import { AppContainer } from './Container';
-import { Category } from '@/types';
-import SectionHeading from './SectionHeading';
-import { Button } from './ui/button';
-import { ArrowRight } from 'lucide-react';
+
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import { AppContainer } from './Container';
+import { Skeleton } from './ui/skeleton';
+import { categoryService } from '@/services/category-service';
+import { Category } from '@/types';
 import { CategoryStatus } from '@/constant';
 
-const categoryImages = [
-  'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1519947486511-46149fa0a254?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=900&q=80',
+// Curated high quality imagery for the 5 quick category showcase cards matching reference
+const DEFAULT_CATEGORY_CARDS = [
+  {
+    id: 'cat-audio',
+    name: 'Audio',
+    subtitle: 'Premium Sound',
+    slug: 'audio',
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'cat-smart',
+    name: 'Smart Devices',
+    subtitle: 'Smarter Living',
+    slug: 'smart-devices',
+    image: 'https://images.unsplash.com/photo-1543512214-318c7553f230?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'cat-wearables',
+    name: 'Wearables',
+    subtitle: 'Track. Achieve.',
+    slug: 'wearables',
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'cat-accessories',
+    name: 'Accessories',
+    subtitle: 'Designed for You',
+    slug: 'accessories',
+    image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'cat-deals',
+    name: 'Deals',
+    subtitle: 'Top Deals Today',
+    slug: 'deals',
+    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=400&q=80',
+  },
 ];
 
-export const HomeCategory = () => {
+export const HomeCategory: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const handleFetchCategory = async () => {
-      try {
-        const response = await categoryService.getAll();
-        if (response.success) {
-          setCategories(response.data.filter((category) => category.status === CategoryStatus.ACTIVE));
-        }
-      } catch (error: unknown) {
-        console.log('Error: failed to fetch categories.', error);
+  const fetchCategories = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await categoryService.getAll();
+      if (response && response.success && Array.isArray(response.data) && response.data.length > 0) {
+        setCategories(response.data.filter((c) => c.status === CategoryStatus.ACTIVE));
       }
-    };
-    handleFetchCategory();
-    return () => new AbortController().abort();
+    } catch {
+      // Fallback cards handle offline/empty states gracefully
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const displayCards = DEFAULT_CATEGORY_CARDS.map((fallback, idx) => {
+    const backendCat = categories[idx];
+    if (backendCat) {
+      return {
+        id: String(backendCat.id),
+        name: backendCat.name,
+        subtitle: backendCat.description || fallback.subtitle,
+        slug: backendCat.slug,
+        image: backendCat.image || fallback.image,
+      };
+    }
+    return fallback;
+  });
+
   return (
-    <AppContainer className="pt-10 sm:pt-14">
-      <SectionHeading title="Shop by category" description="A quick way to find what you need.">
-        <Button variant="ghost" className="group text-xs" asChild>
-          <Link href="/products">
-            View all
-            <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform duration-75" />
-          </Link>
-        </Button>
-      </SectionHeading>
-      <div className="my-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {categories.slice(0, 4).map((category, index) => (
-          <Link
-            href={`/products?category=${encodeURIComponent(category.slug)}`}
-            className="group relative min-h-48 overflow-hidden rounded border bg-gray-100 text-left shadow-xs transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-            key={category.id}
-            aria-label={`Browse products in ${category.name}`}
-          >
-            <img
-              src={categoryImages[index % categoryImages.length]}
-              alt={`${category.name} collection`}
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="absolute inset-x-4 bottom-4 text-white">
-              <p className="truncate text-lg font-semibold">{category.name}</p>
-              {/* <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/80"> */}
-              {/* {category.description || `Explore the ${category.name.toLowerCase()} collection.`} */}
-              {/* </p> */}
+    <AppContainer className="pt-6 sm:pt-8">
+      {/* 5-Column Quick Category Showcase Row */}
+      {isLoading ? (
+        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:overflow-visible">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-24 min-w-[220px] sm:min-w-0 flex-1 rounded-[12px] bg-[#F6F7F9] p-3 flex flex-row items-center gap-3 animate-pulse border border-[#EAECEF]"
+            >
+              <Skeleton className="size-14 rounded-[10px] shrink-0" />
+              <div className="flex-1 space-y-1.5">
+                <Skeleton className="h-4 w-20 rounded-md" />
+                <Skeleton className="h-3 w-24 rounded-md" />
+              </div>
+              <Skeleton className="size-7 rounded-full shrink-0" />
             </div>
-          </Link>
-        ))}
-        {categories.length === 0 && (
-          <p className="col-span-full rounded-xl border border-dashed px-5 py-8 text-center text-sm text-slate-500">
-            Categories will appear here as the collection grows.
-          </p>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:overflow-visible">
+          {displayCards.map((card) => (
+            <Link
+              key={card.id}
+              href={`/products?category=${encodeURIComponent(card.slug)}`}
+              className="group flex h-24 min-w-[220px] sm:min-w-0 flex-1 flex-row items-center justify-between gap-3 p-3.5 rounded-[12px] bg-[#F6F7F9] border border-[#EAECEF] shadow-xs hover:shadow-lg transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#C8102E]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E]/30"
+              aria-label={`Explore ${card.name}`}
+            >
+              {/* Product Thumbnail */}
+              <div className="size-14 shrink-0 rounded-[10px] overflow-hidden bg-white p-1 flex items-center justify-center">
+                <img
+                  src={card.image}
+                  alt={card.name}
+                  loading="lazy"
+                  className="size-full object-contain transition-transform duration-500 ease-out group-hover:scale-110"
+                />
+              </div>
+
+              {/* Title & Subtitle */}
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-[#111827] text-sm leading-tight truncate group-hover:text-[#C8102E] transition-colors duration-200">
+                  {card.name}
+                </p>
+                <p className="mt-1 text-[11px] text-[#6B7280] line-clamp-1 leading-tight">{card.subtitle}</p>
+              </div>
+
+              {/* Crimson circular arrow button */}
+              <div className="size-7 shrink-0 flex items-center justify-center rounded-full bg-[#C8102E] text-white shadow-xs transition-all duration-300 ease-out group-hover:translate-x-0.5 group-hover:scale-110 group-hover:bg-[#a50d26] group-hover:shadow-md">
+                <span className="text-xs font-bold leading-none">→</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </AppContainer>
   );
 };

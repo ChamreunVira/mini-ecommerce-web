@@ -19,7 +19,7 @@ const DetailRow = ({ label, children }: { label: string; children: React.ReactNo
 
 export const ProductViewDialog = ({ product, onClose }: ProductViewDialogProps) => (
   <Dialog open={product !== null} onOpenChange={(isOpen) => !isOpen && onClose()}>
-    <DialogContent className="sm:max-w-md">
+    <DialogContent className="sm:max-w-md rounded-sm shadow-none border-border">
       {product && (
         <>
           <DialogHeader>

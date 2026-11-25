@@ -105,6 +105,8 @@ export interface Category extends BaseEntity {
   name: string;
   slug: string;
   description?: string;
+  image?: string | null;
+  image_url?: string | null;
   status: CategoryStatus;
 }
 
@@ -190,6 +192,7 @@ export interface CategoryPayload {
   name: string;
   description?: string;
   status: CategoryStatus;
+  image?: File | null;
 }
 
 export interface OrderStatusPayload {

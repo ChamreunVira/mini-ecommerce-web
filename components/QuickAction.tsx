@@ -12,13 +12,13 @@ const quickActions = [
 ];
 
 export const QuickActions = () => (
-  <Card>
+  <Card className="rounded-sm shadow-none border-border">
     <CardHeader>
       <CardTitle>Quick Actions</CardTitle>
     </CardHeader>
     <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {quickActions.map(({ label, href, icon: Icon }) => (
-        <Button key={href} variant="outline" className="h-auto justify-start gap-3 py-3 rounded" asChild>
+        <Button key={href} variant="outline" className="h-auto justify-start gap-3 py-3 rounded-sm shadow-none" asChild>
           <Link href={href}>
             <Icon className="size-4" />
             {label}

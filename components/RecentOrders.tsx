@@ -30,56 +30,58 @@ const TableMessage = ({ message }: { message: string }) => (
 );
 
 export const RecentOrders = ({ orders, isLoading, errorMessage }: RecentOrdersProps) => (
-  <Card>
+  <Card className="rounded-sm shadow-none border-border">
     <CardHeader className="flex flex-row items-center justify-between">
       <div className="space-y-1.5">
         <CardTitle>Recent Orders</CardTitle>
         <CardDescription>Latest orders placed in your store</CardDescription>
       </div>
-      <Button variant="outline" size="sm" asChild>
-        <Link href="/dashboard/orders">View all</Link>
+      <Button variant="outline" size="sm" className="rounded-sm shadow-none" asChild>
+        <Link href="/admin/orders">View all</Link>
       </Button>
     </CardHeader>
     <CardContent>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Order</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead className="hidden md:table-cell">Items</TableHead>
-            <TableHead className="hidden md:table-cell">Date</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="hidden lg:table-cell">Payment</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading && <TableMessage message="Loading orders..." />}
-          {!isLoading && errorMessage && <TableMessage message={errorMessage} />}
-          {!isLoading && !errorMessage && orders.length === 0 && <TableMessage message="No orders yet." />}
-          {!isLoading &&
-            !errorMessage &&
-            orders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell className="font-medium">
-                  <Link href={`/dashboard/orders/${order.id}`} className="hover:underline">
-                    {order.order_number}
-                  </Link>
-                </TableCell>
-                <TableCell>{order.address?.recipient_name ?? 'Guest'}</TableCell>
-                <TableCell className="hidden md:table-cell">{order.items.length}</TableCell>
-                <TableCell className="hidden md:table-cell">{formatOrderDate(order.created_at)}</TableCell>
-                <TableCell>
-                  <Badge variant={statusBadgeVariants[order.status] ?? 'outline'} className="capitalize">
-                    {order.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden capitalize lg:table-cell">{order.payment?.status ?? 'Unpaid'}</TableCell>
-                <TableCell className="text-right">{formatCurrency(order.total)}</TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
+      <div className="rounded-sm border border-slate-200 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-b border-slate-200 hover:bg-transparent">
+              <TableHead>Order</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead className="hidden md:table-cell">Items</TableHead>
+              <TableHead className="hidden md:table-cell">Date</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="hidden lg:table-cell">Payment</TableHead>
+              <TableHead className="text-right">Total</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading && <TableMessage message="Loading orders..." />}
+            {!isLoading && errorMessage && <TableMessage message={errorMessage} />}
+            {!isLoading && !errorMessage && orders.length === 0 && <TableMessage message="No orders yet." />}
+            {!isLoading &&
+              !errorMessage &&
+              orders.map((order) => (
+                <TableRow key={order.id} className="border-b border-slate-100 hover:bg-slate-50/60">
+                  <TableCell className="font-medium">
+                    <Link href="/admin/orders" className="hover:underline">
+                      {order.order_number}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{order.address?.recipient_name ?? 'Guest'}</TableCell>
+                  <TableCell className="hidden md:table-cell">{order.items.length}</TableCell>
+                  <TableCell className="hidden md:table-cell">{formatOrderDate(order.created_at)}</TableCell>
+                  <TableCell>
+                    <Badge variant={statusBadgeVariants[order.status] ?? 'outline'} className="capitalize rounded-sm shadow-none">
+                      {order.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden capitalize lg:table-cell">{order.payment?.status ?? 'Unpaid'}</TableCell>
+                  <TableCell className="text-right font-medium">{formatCurrency(order.total)}</TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </div>
     </CardContent>
   </Card>
 );

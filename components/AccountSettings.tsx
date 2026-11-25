@@ -27,7 +27,6 @@ export function AccountSettings() {
     setErrorMessage(null);
     setProfileMessage(null);
     setIsSavingProfile(true);
-
     try {
       const response = await authService.updateProfile({ name: name.trim() });
       if (response.success) {
@@ -45,12 +44,10 @@ export function AccountSettings() {
     event.preventDefault();
     setErrorMessage(null);
     setPasswordMessage(null);
-
     if (password !== passwordConfirmation) {
       setErrorMessage('New passwords do not match.');
       return;
     }
-
     setIsSavingPassword(true);
     try {
       const response = await authService.updatePassword({
@@ -72,56 +69,74 @@ export function AccountSettings() {
   };
 
   return (
-    <section className="grid gap-6 lg:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserRound size={18} /> Username
+    <section className="grid gap-4 lg:grid-cols-2">
+      {/* Username Card */}
+      <Card className="rounded-md border-0">
+        <CardHeader className="border-b pb-4">
+          <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900">
+            <span className="flex size-7 items-center justify-center rounded-lg bg-red-50 text-[#C8102E]">
+              <UserRound size={14} />
+            </span>
+            Username
           </CardTitle>
           <CardDescription>Update the name shown on your account.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-5">
           <form onSubmit={handleProfileSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="account-name">Name</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="account-name" className="text-xs font-semibold text-slate-700">
+                Full Name
+              </Label>
               <Input
                 id="account-name"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 required
                 minLength={3}
+                className="rounded-md border-slate-200 focus-visible:ring-[#C8102E]/20 focus-visible:border-[#C8102E]"
               />
             </div>
-            <p className="text-sm text-muted-foreground">Email: {user?.email}</p>
-            <Button type="submit" disabled={isSavingProfile}>
-              {isSavingProfile ? 'Saving...' : 'Save name'}
+            <p className="text-xs text-slate-400">
+              Email: <span className="font-medium text-slate-600">{user?.email}</span>
+            </p>
+            <Button type="submit" disabled={isSavingProfile} className="rounded-md">
+              {isSavingProfile ? 'Saving...' : 'Save Changes'}
             </Button>
-            {profileMessage && <p className="text-sm text-emerald-600">{profileMessage}</p>}
+            {profileMessage && <p className="text-xs text-emerald-600 font-medium">{profileMessage}</p>}
           </form>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <KeyRound size={18} /> Password
+      {/* Password Card */}
+      <Card className="rounded-md">
+        <CardHeader className="border-b border-slate-100 pb-4">
+          <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900">
+            <span className="flex size-7 items-center justify-center rounded-lg bg-red-50 text-[#C8102E]">
+              <KeyRound size={14} />
+            </span>
+            Password
           </CardTitle>
           <CardDescription>Use your current password to set a new one.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-5">
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="current-password">Current password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="current-password" className="text-xs font-semibold text-slate-700">
+                Current Password
+              </Label>
               <Input
                 id="current-password"
                 type="password"
                 value={currentPassword}
                 onChange={(event) => setCurrentPassword(event.target.value)}
                 required
+                className="rounded-md border-slate-200 focus-visible:ring-[#C8102E]/20 focus-visible:border-[#C8102E]"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="new-password">New password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-password" className="text-xs font-semibold text-slate-700">
+                New Password
+              </Label>
               <Input
                 id="new-password"
                 type="password"
@@ -129,10 +144,13 @@ export function AccountSettings() {
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={6}
                 required
+                className="rounded-md border-slate-200 focus-visible:ring-[#C8102E]/20 focus-visible:border-[#C8102E]"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm new password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="confirm-password" className="text-xs font-semibold text-slate-700">
+                Confirm New Password
+              </Label>
               <Input
                 id="confirm-password"
                 type="password"
@@ -140,17 +158,22 @@ export function AccountSettings() {
                 onChange={(event) => setPasswordConfirmation(event.target.value)}
                 minLength={6}
                 required
+                className="rounded-md border-slate-200 focus-visible:ring-[#C8102E]/20 focus-visible:border-[#C8102E]"
               />
             </div>
-            <Button type="submit" disabled={isSavingPassword}>
-              {isSavingPassword ? 'Saving...' : 'Change password'}
+            <Button type="submit" disabled={isSavingPassword} className="rounded-md">
+              {isSavingPassword ? 'Saving...' : 'Change Password'}
             </Button>
-            {passwordMessage && <p className="text-sm text-emerald-600">{passwordMessage}</p>}
+            {passwordMessage && <p className="text-xs text-emerald-600 font-medium">{passwordMessage}</p>}
           </form>
         </CardContent>
       </Card>
+
       {errorMessage && (
-        <p className="text-sm text-rose-600 lg:col-span-2" role="alert">
+        <p
+          className="text-sm text-rose-600 lg:col-span-2 rounded-lg bg-rose-50 border border-rose-200 px-4 py-3"
+          role="alert"
+        >
           {errorMessage}
         </p>
       )}

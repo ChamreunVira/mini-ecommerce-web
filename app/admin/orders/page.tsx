@@ -171,7 +171,7 @@ export default function OrdersPage() {
             }}
             placeholder="Search order number, customer, or phone..."
             aria-label="Search orders"
-            className="pl-9"
+            className="pl-9 rounded-sm shadow-none border-border focus-visible:ring-1 focus-visible:ring-primary"
           />
         </div>
         <Select
@@ -181,20 +181,20 @@ export default function OrdersPage() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-full sm:w-48" aria-label="Filter orders by status">
+          <SelectTrigger className="w-full sm:w-48 rounded-sm shadow-none border-border" aria-label="Filter orders by status">
             <SelectValue placeholder="Order status" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
+          <SelectContent className="rounded-sm shadow-none border-border">
+            <SelectItem value="all" className="rounded-sm">All statuses</SelectItem>
             {Object.values(OrderStatus).map((status) => (
-              <SelectItem key={status} value={status} className="capitalize">
+              <SelectItem key={status} value={status} className="capitalize rounded-sm">
                 {status}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         {hasActiveFilters && (
-          <Button variant="ghost" onClick={resetFilters}>
+          <Button variant="ghost" onClick={resetFilters} className="rounded-sm shadow-none">
             <X />
             Reset
           </Button>
@@ -220,18 +220,19 @@ export default function OrdersPage() {
         onClose={() => setViewingOrder(null)}
         getTitle={(order) => order.order_number}
         getDescription={(order) => `Placed on ${formatOrderDate(order.created_at)}`}
+        className="rounded-sm shadow-none border-border"
       >
         {(order) => (
           <div className="space-y-4">
-            <section className="rounded-md border bg-slate-50/70 p-3" aria-label="Carrier route">
+            <section className="rounded-sm border border-slate-200 bg-slate-50/70 p-3 shadow-none" aria-label="Carrier route">
               <div className="mb-3 flex items-center gap-2 text-sm font-medium">
-                <Truck className="size-4 text-indigo-600" aria-hidden="true" />
+                <Truck className="size-4 text-[#C8102E]" aria-hidden="true" />
                 Carrier route
               </div>
               <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-2 text-xs">
                 <div className="min-w-0">
                   <div className="mb-1 flex items-center gap-1 font-medium text-slate-900">
-                    <MapPin className="size-3.5 textj-indigo-600" aria-hidden="true" />
+                    <MapPin className="size-3.5 text-[#C8102E]" aria-hidden="true" />
                     From
                   </div>
                   <p className="wrap-break-word text-muted-foreground">{ADMIN_FULFILLMENT_LOCATION}</p>
@@ -239,7 +240,7 @@ export default function OrdersPage() {
                 <ArrowRight className="mt-1 size-4 text-muted-foreground" aria-hidden="true" />
                 <div className="min-w-0 text-right">
                   <div className="mb-1 flex items-center justify-end gap-1 font-medium text-slate-900">
-                    <MapPin className="size-3.5 text-rose-600" aria-hidden="true" />
+                    <MapPin className="size-3.5 text-[#C8102E]" aria-hidden="true" />
                     To
                   </div>
                   <p className="wrap-break-word text-muted-foreground">

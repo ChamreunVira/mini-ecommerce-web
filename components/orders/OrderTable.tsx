@@ -37,7 +37,7 @@ const DEFAULT_STATUS_CLASS_NAME = 'border-slate-200 bg-slate-50 text-slate-700';
 const statusClassNames: Record<string, string> = {
   pending: 'border-amber-200 bg-amber-50 text-amber-700',
   processing: 'border-blue-200 bg-blue-50 text-blue-700',
-  shipped: 'border-indigo-200 bg-indigo-50 text-indigo-700',
+  shipped: 'border-orange-200 bg-orange-50 text-orange-700',
   delivered: 'border-emerald-200 bg-emerald-50 text-emerald-700',
   completed: 'border-emerald-200 bg-emerald-50 text-emerald-700',
   cancelled: 'border-rose-200 bg-rose-50 text-rose-700',
@@ -71,10 +71,10 @@ export const OrderTable = ({
   onStatusChange,
 }: OrderTableProps) => (
   <div className="space-y-4">
-    <div className="rounded-md border">
+    <div className="rounded-sm border border-slate-200 shadow-none bg-white">
       <Table className="min-w-212.5">
         <TableHeader>
-          <TableRow>
+          <TableRow className="border-b border-slate-200 hover:bg-transparent">
             <TableHead>Order</TableHead>
             <TableHead>Customer</TableHead>
             <TableHead className="hidden lg:table-cell">Date</TableHead>
@@ -92,7 +92,7 @@ export const OrderTable = ({
           {!isLoading &&
             !errorMessage &&
             orders.map((order) => (
-              <TableRow key={order.id}>
+              <TableRow key={order.id} className="border-b border-slate-100 hover:bg-slate-50/60">
                 <TableCell className="font-medium">{order.order_number}</TableCell>
                 <TableCell>
                   <div className="font-medium">{order.address?.recipient_name ?? 'Guest'}</div>
@@ -101,7 +101,7 @@ export const OrderTable = ({
                 <TableCell className="hidden lg:table-cell">{formatOrderDate(order.created_at)}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className={`capitalize ${getStatusClassName(order.status)}`}>
+                    <Badge variant="outline" className={`capitalize rounded-sm shadow-none text-xs ${getStatusClassName(order.status)}`}>
                       {formatStatus(order.status)}
                     </Badge>
                     <Select
@@ -110,14 +110,14 @@ export const OrderTable = ({
                       onValueChange={(status) => onStatusChange(order, status as OrderStatus)}
                     >
                       <SelectTrigger
-                        className="h-8 w-8 border-0 p-0 [&>svg]:size-3"
+                        className="h-7 w-7 rounded-sm border-0 p-0 shadow-none hover:bg-slate-100 [&>svg]:size-3"
                         aria-label={`Update status for ${order.order_number}`}
                       >
                         <span className="sr-only">Change status</span>
                       </SelectTrigger>
-                      <SelectContent position="popper" align="start" className="min-w-40">
+                      <SelectContent position="popper" align="start" className="min-w-40 rounded-sm shadow-none border-border">
                         {Object.values(OrderStatus).map((status) => (
-                          <SelectItem key={status} value={status} className="capitalize">
+                          <SelectItem key={status} value={status} className="capitalize rounded-sm text-xs">
                             {formatStatus(status)}
                           </SelectItem>
                         ))}
@@ -129,25 +129,25 @@ export const OrderTable = ({
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" aria-label={`Actions for ${order.order_number}`}>
-                        <MoreHorizontal />
+                      <Button variant="ghost" size="icon" className="size-8 rounded-sm shadow-none" aria-label={`Actions for ${order.order_number}`}>
+                        <MoreHorizontal className="size-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onSelect={() => onView(order)}>
-                        <Eye />
+                    <DropdownMenuContent align="end" className="rounded-sm shadow-none border-border">
+                      <DropdownMenuItem onSelect={() => onView(order)} className="rounded-sm cursor-pointer">
+                        <Eye className="size-4" />
                         View details
                       </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={() => onPrint(order)}>
-                        <Printer />
+                      <DropdownMenuItem onSelect={() => onPrint(order)} className="rounded-sm cursor-pointer">
+                        <Printer className="size-4" />
                         Print invoice
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        className="text-destructive focus:text-destructive"
+                        className="text-destructive focus:text-destructive rounded-sm cursor-pointer"
                         onSelect={() => onDelete(order)}
                       >
-                        <Trash2 />
+                        <Trash2 className="size-4" />
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -168,6 +168,7 @@ export const OrderTable = ({
         <Button
           variant="outline"
           size="sm"
+          className="rounded-sm shadow-none"
           disabled={paginationMeta.current_page <= 1 || isLoading}
           onClick={() => onPageChange(paginationMeta.current_page - 1)}
         >
@@ -176,6 +177,7 @@ export const OrderTable = ({
         <Button
           variant="outline"
           size="sm"
+          className="rounded-sm shadow-none"
           disabled={!paginationMeta.has_more_pages || isLoading}
           onClick={() => onPageChange(paginationMeta.current_page + 1)}
         >

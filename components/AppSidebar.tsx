@@ -33,6 +33,7 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useAppContext } from '@/context/AppContextProvider';
 import { Avatar } from './ui/avatar';
+import Image from 'next/image';
 
 interface SidebarNavigationItem {
   title: string;
@@ -93,9 +94,16 @@ export const AppSidebar = () => {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b">
         <SidebarMenu>
-          <SidebarMenuItem className="py-2 px-3 font-medium text-xl">
-            <span className="text-indigo-500">e</span>
-            <span className="group-data-[collapsible=icon]:hidden">St4re</span>
+          <SidebarMenuItem className="py-2 px-3">
+            <Link href="/">
+              <div className="flex itmes-center gap-2">
+                <Image width={40} height={40} src="/assets/estore.png" alt="brand_img" className="object-contain" />
+                <div>
+                  <h1 className="font-semibold text-[16px] text-rose-600">St4re</h1>
+                  <p className="text-gray-600 text-xs">Mini Store</p>
+                </div>
+              </div>
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -136,7 +144,7 @@ export const AppSidebar = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton tooltip="Account">
-                  <Avatar className="flex items-center justify-center font-semibold text-indigo-500 bg-indigo-50">
+                  <Avatar className="flex items-center justify-center font-semibold text-rose-600 bg-rose-50">
                     CV
                   </Avatar>
                   <span>{user?.name}</span>

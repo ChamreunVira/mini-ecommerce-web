@@ -15,11 +15,11 @@ export function InvoiceDocument({ order }: InvoiceDocumentProps) {
         </div>
         <div className="text-right">
           <p className="font-semibold">
-            <span className="text-indigo-500">Electronic</span> Store
+            <span className="text-rose-600 font-bold">v</span>Store
           </p>
           <p className="text-gray-600">Phnom Penh, Cambodia</p>
         </div>
-      </header>
+    </header>
 
       <section className="grid grid-cols-2 gap-6 border-b border-gray-300 py-6">
         <div>

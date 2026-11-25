@@ -33,7 +33,7 @@ export const DeleteResourceDialog = <TResource,>({
   description,
 }: DeleteResourceDialogProps<TResource>) => (
   <AlertDialog open={resource !== null} onOpenChange={(isOpen) => !isOpen && onClose()}>
-    <AlertDialogContent>
+    <AlertDialogContent className="rounded-sm shadow-none border-border">
       <AlertDialogHeader>
         <AlertDialogTitle>{title ?? `Delete ${resourceLabel}?`}</AlertDialogTitle>
         <AlertDialogDescription>
@@ -44,9 +44,10 @@ export const DeleteResourceDialog = <TResource,>({
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+        <AlertDialogCancel disabled={isDeleting} className="rounded-sm shadow-none">Cancel</AlertDialogCancel>
         <AlertDialogAction
           disabled={isDeleting}
+          className="rounded-sm shadow-none"
           onClick={(event) => {
             event.preventDefault();
             onConfirm();
